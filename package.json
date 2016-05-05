@@ -2,7 +2,7 @@
   "name": "saber",
   "private": true,
   "version": "0.0.0",
-  "description": "a Sails application",
+  "description": "Sabermetrics",
   "keywords": [],
   "dependencies": {
     "ejs": "~0.8.4",
@@ -33,5 +33,14 @@
     "url": "git://github.com/root/saber.git"
   },
   "author": "root",
-  "license": ""
+  "license": "",
+  "jspm": {
+    "directories": {},
+    "dependencies": {},
+    "devDependencies": {
+      "babel": "npm:babel-core@^5.1.13",
+      "babel-runtime": "npm:babel-runtime@^5.1.13",
+      "core-js": "npm:core-js@^0.9.4"
+    }
+  }
 }
