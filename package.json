@@ -28,13 +28,7 @@
   },
   "scripts": {
     "debug": "node debug app.js",
-    "start": "node app.js",
-    "start-tsc": "tsc && concurrently \"npm run tsc:w\" \"npm run lite\" ",
-    "lite": "lite-server",
-    "postinstall": "typings install",
-    "tsc": "tsc",
-    "tsc:w": "tsc -w",
-    "typings": "typings"
+    "start": "node app.js"
   },
   "main": "app.js",
   "repository": {
