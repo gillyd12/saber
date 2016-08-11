@@ -16,9 +16,13 @@ module.exports = {
       parser.getDirectoryContentNames("input").then(function (items) {
 
         try {
-          parser.readRows(items).then(function() {
+          parser.readRows(items).then(function(data) {
+
+            sails.log.info('scores returned ' + data);
+
             // completed: move directory contents to output folder
             parser.moveDirectoryContent("input", "output");
+
           })
         } catch (error) {
           sails.log.error(error);
