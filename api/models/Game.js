@@ -9,6 +9,34 @@ module.exports = {
 
   attributes: {
 
+    game_id: {
+      type: 'string'
+    },
+
+    date: {
+      type: 'date'
+    },
+
+    home_team: {
+      type: 'string'
+    },
+
+    home_score: {
+      type: 'string'
+    },
+
+    visiting_team: {
+      type: 'string'
+    },
+
+    visiting_score: {
+      type: 'string'
+    },
+
+    winning_team: {
+      type: 'string'
+    }
+
   }
 };
 

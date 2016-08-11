@@ -1,7 +1,7 @@
 /**
- * EventController
+ * StatsController
  *
- * @description :: Server-side logic for managing events
+ * @description :: Server-side logic for managing stats
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
