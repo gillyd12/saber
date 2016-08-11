@@ -2,27 +2,28 @@
  * Created by bryangill on 8/11/16.
  */
 
-var fs = require('fs');
-var fse = require('fs-extra');
 var parser = require("./ParserService");
-
 
 module.exports = {
 
   loadSimGameResults: function () {
 
     'use strict'
+
     try {
 
       // start: load the file names in preparation for parsing
-      parser.getDirectoryContentNames("input", function (items) {
-        "use strict";
-        sails.log.info(items);
-      })
+      parser.getDirectoryContentNames("input").then(function (items) {
 
-      // completed: move directory contents to output folder
-      parser.moveDirectoryContent("input", "output");
-
+        try {
+          parser.readRows(items).then(function() {
+            // completed: move directory contents to output folder
+            parser.moveDirectoryContent("input", "output");
+          })
+        } catch (error) {
+          sails.log.error(error);
+        }
+      });
 
     } catch (error) {
       sails.log.error(error);
@@ -31,3 +32,4 @@ module.exports = {
   }
 
 };
+
