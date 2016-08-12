@@ -6,6 +6,7 @@ var fs = require('fs');
 var fse = require('fs-extra');
 var lbl = require('line-by-line');
 var S = require('string');
+var score = [];
 
 module.exports = {
 
@@ -28,13 +29,15 @@ module.exports = {
 
   },
 
-  fileParse: function (lr) {
+  parseFile: function (file) {
 
     //todo: each file will create a new object
 
+
     var promise = new Promise(function (resolve, reject) {
 
-      var score = '';
+
+      var lr = new lbl('input/' + file);
 
       lr.on('error', function (err) {
         sails.log.error(err);
@@ -44,8 +47,8 @@ module.exports = {
       lr.on('line', function (line) {
 
         if (S(line).contains('WIN:')) {
-          score = line;
-          sails.log.info(score);
+          score.push(line);
+          // sails.log.info(score);
           resolve(score);
         }
         // 'line' contains the current line without the trailing newline character.
@@ -72,12 +75,8 @@ module.exports = {
 
         for (var file of files) {
 
-          var lr = new lbl('input/' + file);
-
           try {
-            self.fileParse(lr).then(function (data) {
-              resolve(data);
-            });
+            resolve(self.parseFile(file));
           } catch (err) {
             sails.log.error('error parsing scores: ' + err);
             reject(err);
@@ -128,9 +127,7 @@ module.exports = {
     var promise = new Promise(function (resolve, reject) {
 
       try {
-        self.getScores(files).then(function (data) {
-          resolve(data);
-        });
+        resolve(self.getScores(files));
 
       } catch (err) {
         sails.log.error('error reading rows from directory: ' + err);
