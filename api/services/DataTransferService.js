@@ -3,37 +3,30 @@
  */
 
 var parser = require("./ParserService");
+// var Q = require('q');
+// var fs = require('fs');
+// var S = require('string');
 
 module.exports = {
 
   loadSimGameResults: function () {
 
+    var scores = [];
+
+    var s = '';
+
+    var files = parser.getDirectoryContentNames("input");
+
     'use strict'
 
-    try {
+    sails.log.info(parser.getScores(files));
 
-      // start: load the file names in preparation for parsing
-      parser.getDirectoryContentNames("input").then(function (items) {
+    // completed: move directory contents to output folder
+    parser.moveDirectoryContent("input", "output");
 
-        try {
-          parser.readRows(items).then(function(data) {
 
-            sails.log.info('scores returned ' + data);
-
-            // completed: move directory contents to output folder
-            parser.moveDirectoryContent("input", "output");
-
-          })
-        } catch (error) {
-          sails.log.error(error);
-        }
-      });
-
-    } catch (error) {
-      sails.log.error(error);
-    }
-
-  }
+  },
 
 };
+
 

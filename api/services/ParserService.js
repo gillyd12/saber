@@ -4,9 +4,10 @@
 
 var fs = require('fs');
 var fse = require('fs-extra');
-var lbl = require('line-by-line');
+// var lbl = require('line-by-line');
 var S = require('string');
-var score = [];
+// var Q = require('q');
+var scores = [];
 
 module.exports = {
 
@@ -14,83 +15,53 @@ module.exports = {
 
     "use strict";
 
-    var promise = new Promise(function (resolve, reject) {
-      try {
-        fs.readdir(path, function (err, items) {
-          resolve(items);
-        });
-      } catch (error) {
-        sails.log.error(error);
-        reject(error);
-      }
-    });
-
-    return promise;
-
-  },
-
-  parseFile: function (file) {
-
-    //todo: each file will create a new object
-
-
-    var promise = new Promise(function (resolve, reject) {
-
-
-      var lr = new lbl('input/' + file);
-
-      lr.on('error', function (err) {
-        sails.log.error(err);
-        // 'err' contains error object
-      });
-
-      lr.on('line', function (line) {
-
-        if (S(line).contains('WIN:')) {
-          score.push(line);
-          // sails.log.info(score);
-          resolve(score);
-        }
-        // 'line' contains the current line without the trailing newline character.
-      });
-
-      lr.on('end', function () {
-        // sails.log.info('end of readrows');
-        // All lines are read, file is closed now.
-      });
-
-    });
-
-    return promise;
+    try {
+      return fs.readdirSync(path);
+    } catch (error) {
+      sails.log.error(error);
+    }
 
   },
 
   getScores: function (files) {
     "use strict";
-    var self = this;
 
-    var promise = new Promise(function (resolve, reject) {
-
-      try {
-
-        for (var file of files) {
-
-          try {
-            resolve(self.parseFile(file));
-          } catch (err) {
-            sails.log.error('error parsing scores: ' + err);
-            reject(err);
-          }
+    for(var file of files) {
+      var lines = fs.readFileSync('input/' + file).toString().split("\n");
+      for(var line of lines) {
+        if (S(line).contains('WIN:')) {
+          scores.push(S(line).chompRight('\r').s);
         }
-      } catch (err) {
-        sails.log.error('error parsing scores: ' + err);
-        reject(err);
       }
+    }
 
-    });
+    return scores;
 
-    return promise;
-
+      // for (var file of files) {
+      //
+      //   var lr = new lbl('input/' + file);
+      //
+      //   lr.on('error', function (err) {
+      //     sails.log.error(err);
+      //     // 'err' contains error object
+      //   });
+      //
+      //   lr.on('line', function (line) {
+      //
+      //     if (S(line).contains('WIN:')) {
+      //       scores.push(line);
+      //       sails.log.info(line);
+      //     }
+      //
+      //   });
+      //
+      //   lr.on('end', function () {
+      //     // sails.log.info('end of readrows');
+      //     // All lines are read, file is closed now.
+      //   });
+      // }
+      //
+      // return scores;
   },
 
   moveDirectoryContent: function (from, to) {
@@ -120,25 +91,22 @@ module.exports = {
     }
   },
 
-  readRows: function (files) {
-    "use strict";
-    var self = this;
-
-    var promise = new Promise(function (resolve, reject) {
-
-      try {
-        resolve(self.getScores(files));
-
-      } catch (err) {
-        sails.log.error('error reading rows from directory: ' + err);
-        reject(err);
-      }
-
-    });
-
-    return promise;
-
-  }
-
+  // readRows: function (files) {
+  //   "use strict";
+  //   var self = this;
+  //
+  //   // var promise = new Promise(function(resolve, reject) {
+  //     try {
+  //       return self.getScores(files);
+  //     } catch (err) {
+  //       sails.log.error('error reading rows from directory: ' + err);
+  //       // reject(err);
+  //     }
+  //
+  //   // });
+  //   //
+  //   // return promise;
+  //
+  // }
 
 };
