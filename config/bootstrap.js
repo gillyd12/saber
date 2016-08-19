@@ -10,12 +10,19 @@
  */
 
 var dataService = require("../api/services/DataTransferService");
+var parser = require("../api/services/ParserService");
 
 module.exports.bootstrap = function(cb) {
 
   // pre-caching data
   sails.on('lifted', function() {
-    dataService.loadSimGameResults();
+
+    // load data
+    dataService.reload(Game);
+
+    // tear down
+    // parser.moveDirectoryContent("input", "output");
+
   });
 
 

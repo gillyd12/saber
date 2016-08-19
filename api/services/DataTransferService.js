@@ -2,31 +2,65 @@
  * Created by bryangill on 8/11/16.
  */
 
-var parser = require("./ParserService");
-// var Q = require('q');
-// var fs = require('fs');
-// var S = require('string');
+var utilityService = require('./UtilityService');
+var _ = require('lodash');
 
 module.exports = {
 
-  loadSimGameResults: function () {
+  destroy: function (model) {
+    "use strict";
 
-    var scores = [];
+    try {
+      model.destroy()
+        .then(function (data) {
+          sails.log.info(model.adapter.identity + " destroyed");
+        })
+        .catch(function (error) {
+          sails.log.error(error);
+        });
+    } catch (error) {
+      sails.log.error(error);
+    }
+  },
 
-    var s = '';
+  populate: function (model) {
 
-    var files = parser.getDirectoryContentNames("input");
+    try {
 
-    'use strict'
+      var records = model.load();
 
-    sails.log.info(parser.getScores(files));
+      sails.log.info("loading " + model.adapter.identity + " ...");
 
-    // completed: move directory contents to output folder
-    parser.moveDirectoryContent("input", "output");
+      _(records).forEach(function (value) {
+        // sails.log.info("I went into new records id: " + value.id);
+        var a;
+        var res = {};
+        model.map(a, res, value).then(function (data) {
+          model.create(data.model)
+            .then(function (data) {
+            })
+            .catch(function (error) {
+              sails.log.error(error);
+            });
+        })
+      })
 
+      sails.log.info("loading " + model.adapter.identity + " completed");
 
+    } catch (error) {
+      sails.log.error(error);
+    }
+  },
+
+  reload: function (model) {
+    "use strict";
+    try {
+      // this.destroy(model);
+      this.populate((model));
+    } catch (error) {
+      sails.info.error(error);
+    }
   },
 
 };
-
 

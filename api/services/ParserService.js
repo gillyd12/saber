@@ -4,9 +4,7 @@
 
 var fs = require('fs');
 var fse = require('fs-extra');
-// var lbl = require('line-by-line');
 var S = require('string');
-// var Q = require('q');
 var scores = [];
 
 module.exports = {
@@ -26,42 +24,33 @@ module.exports = {
   getScores: function (files) {
     "use strict";
 
-    for(var file of files) {
-      var lines = fs.readFileSync('input/' + file).toString().split("\n");
-      for(var line of lines) {
-        if (S(line).contains('WIN:')) {
-          scores.push(S(line).chompRight('\r').s);
+    try {
+
+      for(var file of files) {
+
+        var obj = {
+          filename: null,
+          score: null,
+          match_up: null,
+          date_of_game: null
+        };
+
+        obj.filename = S(file).chompRight('.txt').s;
+        var lines = fs.readFileSync('input/' + file).toString().split("\n");
+        obj.match_up = S(lines[0]).chompRight('\r').s;
+        obj.date_of_game = S(lines[1]).chompRight('\r').s;
+        for(var line of lines) {
+          if (S(line).contains('WIN:')) {
+            obj.score = S(line).chompRight('\r').s;
+            scores.push(obj);
+          }
         }
       }
+    } catch (error) {
+      sails.log.error(error);
     }
 
     return scores;
-
-      // for (var file of files) {
-      //
-      //   var lr = new lbl('input/' + file);
-      //
-      //   lr.on('error', function (err) {
-      //     sails.log.error(err);
-      //     // 'err' contains error object
-      //   });
-      //
-      //   lr.on('line', function (line) {
-      //
-      //     if (S(line).contains('WIN:')) {
-      //       scores.push(line);
-      //       sails.log.info(line);
-      //     }
-      //
-      //   });
-      //
-      //   lr.on('end', function () {
-      //     // sails.log.info('end of readrows');
-      //     // All lines are read, file is closed now.
-      //   });
-      // }
-      //
-      // return scores;
   },
 
   moveDirectoryContent: function (from, to) {
@@ -90,23 +79,5 @@ module.exports = {
       sails.log.error('error removing contents from directory: ' + err);
     }
   },
-
-  // readRows: function (files) {
-  //   "use strict";
-  //   var self = this;
-  //
-  //   // var promise = new Promise(function(resolve, reject) {
-  //     try {
-  //       return self.getScores(files);
-  //     } catch (err) {
-  //       sails.log.error('error reading rows from directory: ' + err);
-  //       // reject(err);
-  //     }
-  //
-  //   // });
-  //   //
-  //   // return promise;
-  //
-  // }
 
 };
