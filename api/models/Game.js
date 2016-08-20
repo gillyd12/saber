@@ -5,7 +5,6 @@
 * @docs        :: http://sailsjs.org/#!documentation/models
 */
 
-var parser = require("../services/ParserService");
 var S = require('string');
 
 module.exports = {
@@ -13,11 +12,12 @@ module.exports = {
   attributes: {
 
     game_id: {
-      type: 'string'
+      type: 'string',
+      unique: true
     },
 
     date: {
-      type: 'date'
+      type: 'datetime'
     },
 
     home_team: {
@@ -82,7 +82,7 @@ module.exports = {
   //   return '/games';
   // },
 
-  load: function () {
+  load: function (parser) {
     'use strict'
 
     // startup

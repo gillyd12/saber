@@ -3,6 +3,8 @@
  */
 
 var utilityService = require('./UtilityService');
+var parser = require("./ParserService");
+
 var _ = require('lodash');
 
 module.exports = {
@@ -27,7 +29,7 @@ module.exports = {
 
     try {
 
-      var records = model.load();
+      var records = model.load(parser);
 
       sails.log.info("loading " + model.adapter.identity + " ...");
 

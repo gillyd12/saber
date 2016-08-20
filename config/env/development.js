@@ -22,6 +22,6 @@ module.exports = {
   // }
 
 
-  liftTimeout: 20000
+  liftTimeout: 30000
 
 };
