@@ -25,6 +25,19 @@ module.exports = {
     }
   },
 
+  count: function (model, team) {
+    "use strict";
+    model.count({ winning_team: team })
+      .then(function (data) {
+        "use strict";
+        sails.log.info("found: " + data);
+      })
+      .catch(function (error) {
+        sails.log.error(error.details);
+      });
+
+  },
+
   populate: function (model) {
 
     try {
@@ -38,16 +51,18 @@ module.exports = {
         var a;
         var res = {};
         model.map(a, res, value).then(function (data) {
-          model.create(data.model)
+          model.findOrCreate({ game_id: data.model.game_id }, data.model)
             .then(function (data) {
+              "use strict";
+              sails.log.info("found: " + data.game_id );
             })
             .catch(function (error) {
-              sails.log.error(error);
+              sails.log.error(error.details);
             });
         })
       })
 
-      sails.log.info("loading " + model.adapter.identity + " completed");
+      // sails.log.info("loading " + model.adapter.identity + " completed");
 
     } catch (error) {
       sails.log.error(error);

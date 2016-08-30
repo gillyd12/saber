@@ -21,7 +21,7 @@ module.exports.bootstrap = function(cb) {
     dataService.reload(Game);
 
     // tear down
-    // parser.moveDirectoryContent("input", "output");
+    parser.moveDirectoryContent("input", "output");
 
   });
 
