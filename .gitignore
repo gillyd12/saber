@@ -70,7 +70,8 @@ config.js
 node_modules
 jspm_packages
 bower_components
-
+input/
+output/
 
 
 
@@ -122,3 +123,5 @@ views
 tasks
 assets
 .editorconfig
+ui/
+

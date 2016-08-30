@@ -17,8 +17,23 @@ module.exports = {
    * environment (see config/connections.js and config/models.js )           *
    ***************************************************************************/
 
-  // models: {
-  //   connection: 'someMongodbServer'
-  // }
+  models: {
+    connection: 'mongolabs',
+    migrate: 'safe'
+  },
+
+  connections: {
+
+    mongolabs: {
+      adapter: 'sails-mongo',
+      host: process.env.saber_mongo_host, // defaults to `localhost` if omitted
+      port: process.env.saber_mongo_port, // defaults to 27017 if omitted
+      user: process.env.saber_mongo_username, // or omit if not relevant
+      password: process.env.saber_mongo_password, // or omit if not relevant
+      database: process.env.saber_mongo_database // or omit if not relevant
+    }
+  },
+
+   liftTimeout: 30000
 
 };
