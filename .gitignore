@@ -42,10 +42,6 @@
 config/local.js
 config.js
 
-
-
-
-
 ################################################
 # Dependencies
 #
@@ -70,10 +66,6 @@ config.js
 node_modules
 jspm_packages
 bower_components
-input/
-output/
-
-
 
 ################################################
 # Sails.js / Waterline / Grunt
@@ -83,10 +75,6 @@ output/
 ################################################
 .tmp
 dump.rdb
-
-
-
-
 
 ################################################
 # Node.js / NPM
@@ -100,10 +88,6 @@ lib-cov
 *.out
 *.pid
 npm-debug.log
-
-
-
-
 
 ################################################
 # Miscellaneous
