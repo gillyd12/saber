@@ -108,4 +108,5 @@ tasks
 assets
 .editorconfig
 ui/
+*.txt
 

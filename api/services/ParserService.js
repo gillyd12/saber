@@ -35,14 +35,16 @@ module.exports = {
           date_of_game: null
         };
 
-        obj.filename = S(file).chompRight('.txt').s;
-        var lines = fs.readFileSync('input/' + file).toString().split("\n");
-        obj.match_up = S(lines[0]).chompRight('\r').s;
-        obj.date_of_game = S(lines[1]).chompRight('\r').s;
-        for(var line of lines) {
-          if (S(line).contains('WIN:')) {
-            obj.score = S(line).chompRight('\r').s;
-            scores.push(obj);
+        if (S(file).contains('.txt')) {
+          obj.filename = S(file).chompRight('.txt').s;
+          var lines = fs.readFileSync('input/' + file).toString().split("\n");
+          obj.match_up = S(lines[0]).chompRight('\r').s;
+          obj.date_of_game = S(lines[1]).chompRight('\r').s;
+          for(var line of lines) {
+            if (S(line).contains('WIN:')) {
+              obj.score = S(line).chompRight('\r').s;
+              scores.push(obj);
+            }
           }
         }
       }
