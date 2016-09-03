@@ -38,6 +38,10 @@ module.exports = {
 
     winning_team: {
       type: 'string'
+    },
+
+    losing_team: {
+      type: 'string'
     }
 
   },
@@ -55,10 +59,12 @@ module.exports = {
         home_score: model.score.substr(model.score.lastIndexOf('-')+1, model.score.length),
         visiting_team: model.match_up.substr(0, model.match_up.indexOf(' at ')),
         visiting_score: model.score.substr(model.match_up.indexOf(': ')-2, model.match_up.indexOf(': ')+2),
-        winning_team: ""
+        winning_team: "",
+        losing_team: ""
       }
 
       obj.winning_team = self.determineWinner(obj);
+      obj.losing_team = self.determineLoser(obj);
 
       res.model = obj;
       resolve(res);
@@ -73,6 +79,17 @@ module.exports = {
       return obj.home_team;
     } else {
       return obj.visiting_team;
+    }
+
+  },
+
+  determineLoser: function (obj) {
+    "use strict";
+
+    if (obj.home_score > obj.visiting_score) {
+      return obj.visiting_team;
+    } else {
+      return obj.home_team;
     }
 
   },
