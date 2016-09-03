@@ -75,7 +75,7 @@ module.exports = {
     sails.log.info("beginning to remove contents from directory...");
     try {
       sails.log.info("removing contents from directory...");
-      fse.emptyDirSync(from);
+      fse.removeSync(from + '/*.txt');
       sails.log.info("completed removing contents from directory");
     } catch (err) {
       sails.log.error('error removing contents from directory: ' + err);
