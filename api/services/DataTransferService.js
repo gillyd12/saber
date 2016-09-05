@@ -47,7 +47,6 @@ module.exports = {
       sails.log.info("loading " + model.adapter.identity + " ...");
 
       _(records).forEach(function (value) {
-        // sails.log.info("I went into new records id: " + value.id);
         var a;
         var res = {};
         model.map(a, res, value).then(function (data) {
