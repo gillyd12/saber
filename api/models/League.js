@@ -10,7 +10,9 @@ module.exports = {
   attributes: {
 
     name: {
-      type: 'string'
+      type: 'string',
+      unique: true,
+      primaryKey: true
     },
 
     // Add a reference to teams
@@ -35,7 +37,7 @@ module.exports = {
         });
     }
 
-  }
+  },
 
 };
 
