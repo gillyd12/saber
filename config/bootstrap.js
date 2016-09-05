@@ -20,6 +20,7 @@ module.exports.bootstrap = function(cb) {
     // load data
     dataService.reload(Game);
     League.init(['AL', 'NL']);
+    Team.init();
 
     // tear down
     parser.moveDirectoryContent("input", "output");
