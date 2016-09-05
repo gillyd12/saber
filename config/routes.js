@@ -46,7 +46,9 @@ module.exports.routes = {
   *                                                                          *
   ***************************************************************************/
 
+  // TeamController
+
   // /team/Chicago Cubs/record?count=30 - will get you the number of games the cubs won and lost in their last 30
-  'get /team/:full_name/record': {controller: 'TeamController', action: 'record', skipAssets: true}
+  'get /team/:full_name/record': {controller: 'TeamController', action: 'record', skipAssets: true},
 
 };
