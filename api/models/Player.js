@@ -9,6 +9,10 @@ module.exports = {
 
   attributes: {
 
+    member: {
+      model: 'team'
+    },
+
   }
 };
 
