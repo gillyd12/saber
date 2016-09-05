@@ -34,7 +34,7 @@ module.exports.routes = {
 
   '/': {
     view: 'homepage'
-  }
+  },
 
   /***************************************************************************
   *                                                                          *
@@ -45,5 +45,8 @@ module.exports.routes = {
   * for configuration options and examples.                                  *
   *                                                                          *
   ***************************************************************************/
+
+  // /games?team=cubs&count=30 - will get you the number of games the cubs won and lost in their last 30
+  'get /games': {controller: 'GameController', action: 'games', skipAssets: true}
 
 };
