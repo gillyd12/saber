@@ -26,6 +26,11 @@ module.exports = {
       type: 'string'
     },
 
+    // Add a reference to players
+    players: {
+      collection: 'player'
+    },
+
     contract: {
       model: 'league'
     }
