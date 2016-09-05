@@ -26,6 +26,10 @@ module.exports = {
       type: 'string'
     },
 
+    division: {
+      type: 'string'
+    },
+
     // Add a reference to players
     players: {
       collection: 'player'
