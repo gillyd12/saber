@@ -18,7 +18,7 @@ module.exports = {
     // Add a reference to teams
     teams: {
       collection: 'team',
-      via: 'contract'
+      via: 'league'
     }
 
   },

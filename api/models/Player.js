@@ -9,10 +9,31 @@ module.exports = {
 
   attributes: {
 
-    member: {
+    name: {
+      type: 'string'
+    },
+
+    team: {
       model: 'team'
     },
 
+  },
+
+  init: function () {
+    "use strict";
+      Player.findOrCreate({name: 'test name'}, {
+        name: 'test name',
+        team: 'BOS'
+      })
+        .then(function (data) {
+          "use strict";
+          sails.log.info("found: " + data.name);
+        })
+        .catch(function (error) {
+          sails.log.error(error.details);
+        });
+
   }
+
 };
 
