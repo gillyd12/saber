@@ -21,10 +21,12 @@ module.exports.bootstrap = function(cb) {
     dataService.reload(Game);
     League.init(['AL', 'NL']);
     Team.init();
-    Player.init();
+    dataService.reload(Player);
+
+    // Player.init();
 
     // tear down
-    parser.moveDirectoryContent("input", "output");
+    // parser.moveDirectoryContent("input", "output");
 
   });
 

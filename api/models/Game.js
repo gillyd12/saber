@@ -103,7 +103,20 @@ module.exports = {
     'use strict'
 
     // startup
-    return parser.getScores(parser.getDirectoryContentNames("input"));
+    return parser.getScores(parser.getDirectoryContentNames("input/Recaps"));
   },
+
+  populate: function (data) {
+    "use strict";
+    Game.findOrCreate({ game_id: data.model.game_id }, data.model)
+      .then(function (data) {
+        "use strict";
+        sails.log.info("found: " + data.game_id );
+      })
+      .catch(function (error) {
+        sails.log.error(error.details);
+      });
+
+  }
 };
 

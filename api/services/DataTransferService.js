@@ -50,14 +50,8 @@ module.exports = {
         var a;
         var res = {};
         model.map(a, res, value).then(function (data) {
-          model.findOrCreate({ game_id: data.model.game_id }, data.model)
-            .then(function (data) {
-              "use strict";
-              sails.log.info("found: " + data.game_id );
-            })
-            .catch(function (error) {
-              sails.log.error(error.details);
-            });
+          "use strict";
+          model.populate(data);
         })
       })
 

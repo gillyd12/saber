@@ -109,4 +109,8 @@ assets
 .editorconfig
 ui/
 *.txt
+data
+*.zip
+input/Box Scores
+input/Recaps
 
