@@ -55,8 +55,6 @@ module.exports = {
         })
       })
 
-      // sails.log.info("loading " + model.adapter.identity + " completed");
-
     } catch (error) {
       sails.log.error(error);
     }
@@ -65,7 +63,6 @@ module.exports = {
   reload: function (callback, model) {
     "use strict";
     try {
-      // this.destroy(model);
       this.populate(callback, model);
     } catch (error) {
       sails.info.error(error);

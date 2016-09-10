@@ -29,20 +29,11 @@ module.exports.bootstrap = function(cb) {
       },
       function(callback) {
         dataService.reload(callback, Player);
+      },
+      function(callback) {
+        parser.moveDirectoryContent(callback, "input", "output");
       }
     ])
-
-    // load data
-    // dataService.reload(Game);
-    // League.init(['AL', 'NL']);
-    // Team.init();
-    // dataService.reload(Player);
-
-    // Player.init();
-
-    // tear down
-    // parser.moveDirectoryContent("input", "output");
-
   });
 
 

@@ -165,7 +165,7 @@ module.exports = {
     return batters;
   },
 
-  moveDirectoryContent: function (from, to) {
+  moveDirectoryContent: function (callback, from, to) {
 
     "use strict";
 
@@ -174,6 +174,7 @@ module.exports = {
       fse.copySync(from, to);
       sails.log.info("completed moving directory content")
       this.removeDirectoryContent(from);
+      callback();
     } catch (err) {
       sails.log.error('error moving directory content: ' + err);
     }
@@ -185,7 +186,8 @@ module.exports = {
     sails.log.info("beginning to remove contents from directory...");
     try {
       sails.log.info("removing contents from directory...");
-      fse.removeSync(from + '/*.txt');
+      fse.removeSync(from + '/Box Scores' + '/*.txt');
+      fse.removeSync(from + '/Recaps' + '/*.txt');
       sails.log.info("completed removing contents from directory");
     } catch (err) {
       sails.log.error('error removing contents from directory: ' + err);
