@@ -17,27 +17,15 @@ module.exports = {
       type: 'string'
     },
 
+    position: {
+      type: 'string'
+    },
+
     team: {
       model: 'team'
     },
 
   },
-
-  // init: function () {
-  //   "use strict";
-  //   Player.findOrCreate({name: 'test name'}, {
-  //     name: 'test name',
-  //     team: 'BOS'
-  //   })
-  //     .then(function (data) {
-  //       "use strict";
-  //       sails.log.info("found: " + data.name);
-  //     })
-  //     .catch(function (error) {
-  //       sails.log.error(error.details);
-  //     });
-  //
-  // },
 
   map: function (a, res, model) {
     "use strict";
@@ -47,18 +35,11 @@ module.exports = {
 
       var obj = {
         player_id: model.player_id,
-        name: model.name
-        // date: model.date_of_game,
-        // home_team: model.match_up.substr(model.match_up.indexOf(' at ')+4, model.match_up.length),
-        // home_score: model.score.substr(model.score.lastIndexOf('-')+1, model.score.length),
-        // visiting_team: model.match_up.substr(0, model.match_up.indexOf(' at ')),
-        // visiting_score: model.score.substr(model.match_up.indexOf(': ')-2, model.match_up.indexOf(': ')+2),
-        // winning_team: "",
-        // losing_team: ""
+        name: model.name,
+        team: 'TEX',
+        filename: model.filename,
+        position: model.position
       }
-
-      // obj.winning_team = self.determineWinner(obj);
-      // obj.losing_team = self.determineLoser(obj);
 
       res.model = obj;
       resolve(res);
@@ -74,12 +55,13 @@ module.exports = {
     return parser.getBatters(parser.getDirectoryContentNames("input/Box Scores"));
   },
 
-  populate: function (data) {
+  populate: function (callback, data) {
     "use strict";
     Player.findOrCreate({player_id: data.player_id}, data.model)
       .then(function (data) {
         "use strict";
         sails.log.info("found: " + data.name);
+        callback();
       })
       .catch(function (error) {
         sails.log.error(error.details);

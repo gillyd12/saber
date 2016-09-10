@@ -23,7 +23,7 @@ module.exports = {
 
   },
 
-  init: function (obj) {
+  init: function (callback, obj) {
     "use strict";
 
     for (var league of obj) {
@@ -36,6 +36,8 @@ module.exports = {
           sails.log.error(error.details);
         });
     }
+
+    callback();
 
   },
 

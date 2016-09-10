@@ -38,7 +38,7 @@ module.exports = {
 
   },
 
-  populate: function (model) {
+  populate: function (callback, model) {
 
     try {
 
@@ -51,7 +51,7 @@ module.exports = {
         var res = {};
         model.map(a, res, value).then(function (data) {
           "use strict";
-          model.populate(data);
+          model.populate(callback, data);
         })
       })
 
@@ -62,11 +62,11 @@ module.exports = {
     }
   },
 
-  reload: function (model) {
+  reload: function (callback, model) {
     "use strict";
     try {
       // this.destroy(model);
-      this.populate((model));
+      this.populate(callback, model);
     } catch (error) {
       sails.info.error(error);
     }

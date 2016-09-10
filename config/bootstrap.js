@@ -17,11 +17,26 @@ module.exports.bootstrap = function(cb) {
   // pre-caching data
   sails.on('lifted', function() {
 
+    async.series([
+      function(callback) {
+        dataService.reload(callback, Game);
+      },
+      function(callback) {
+        League.init(callback, ['AL', 'NL']);
+      },
+      function(callback) {
+        Team.init(callback);
+      },
+      function(callback) {
+        dataService.reload(callback, Player);
+      }
+    ])
+
     // load data
-    dataService.reload(Game);
-    League.init(['AL', 'NL']);
-    Team.init();
-    dataService.reload(Player);
+    // dataService.reload(Game);
+    // League.init(['AL', 'NL']);
+    // Team.init();
+    // dataService.reload(Player);
 
     // Player.init();
 
