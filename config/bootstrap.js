@@ -17,15 +17,23 @@ module.exports.bootstrap = function(cb) {
   // pre-caching data
   sails.on('lifted', function() {
 
-    // load data
-    dataService.reload(Game);
-    League.init(['AL', 'NL']);
-    Team.init();
-    Player.init();
-
-    // tear down
-    parser.moveDirectoryContent("input", "output");
-
+    async.series([
+      function(callback) {
+        dataService.reload(callback, Game);
+      },
+      function(callback) {
+        League.init(callback, ['AL', 'NL']);
+      },
+      function(callback) {
+        Team.init(callback);
+      },
+      function(callback) {
+        dataService.reload(callback, Player);
+      },
+      function(callback) {
+        parser.moveDirectoryContent(callback, "input", "output");
+      }
+    ])
   });
 
 

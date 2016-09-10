@@ -38,7 +38,7 @@ module.exports = {
 
   },
 
-  populate: function (model) {
+  populate: function (callback, model) {
 
     try {
 
@@ -50,29 +50,20 @@ module.exports = {
         var a;
         var res = {};
         model.map(a, res, value).then(function (data) {
-          model.findOrCreate({ game_id: data.model.game_id }, data.model)
-            .then(function (data) {
-              "use strict";
-              sails.log.info("found: " + data.game_id );
-            })
-            .catch(function (error) {
-              sails.log.error(error.details);
-            });
+          "use strict";
+          model.populate(callback, data);
         })
       })
-
-      // sails.log.info("loading " + model.adapter.identity + " completed");
 
     } catch (error) {
       sails.log.error(error);
     }
   },
 
-  reload: function (model) {
+  reload: function (callback, model) {
     "use strict";
     try {
-      // this.destroy(model);
-      this.populate((model));
+      this.populate(callback, model);
     } catch (error) {
       sails.info.error(error);
     }
