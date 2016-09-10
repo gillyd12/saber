@@ -8,7 +8,6 @@ var S = require('string');
 var US = require("underscore.string");
 var async = require('async');
 var scores = [];
-var players = [];
 var batters = [];
 var abrv = null;
 
@@ -112,18 +111,27 @@ module.exports = {
 
         var filename = null;
 
+        var visiting_team_abrv = null;
+        var home_team_abrv = null;
+
         if (S(file).contains('.txt')) {
           filename = S(file).chompRight('.txt').s;
           var lines = fs.readFileSync('input/Box Scores/' + file).toString().split("\n");
 
-
-          // obj.match_up = S(lines[0]).chompRight('\r').s;
-          // obj.date_of_game = S(lines[1]).chompRight('\r').s;
+          visiting_team_abrv = S(US.strRight(US.strLeft(lines[4], ')'), '(')).trim().s
+          home_team_abrv = S(US.strRight(US.strLeft(lines[5], ')'), '(')).trim().s
+          var used_visiting_team = false;
 
           for (var line of lines) {
             if (S(line).collapseWhitespace().contains('ab h')) {
+              if (!used_visiting_team) {
+                abrv = visiting_team_abrv;
+                used_visiting_team = true; // been there once
 
-              var team = S(US.strLeft(line, 'ab')).trim().s;
+              } else {
+                abrv = home_team_abrv;
+              }
+
             }
 
             if (S(line).contains('(LF)') ||
@@ -136,7 +144,7 @@ module.exports = {
               S(line).contains('(3B)') ||
               S(line).contains('(DH)')) {
               var obj = {
-                team: team,
+                team: abrv,
                 filename: filename,
                 name: null,
                 player_id: null

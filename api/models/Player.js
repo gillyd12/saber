@@ -36,7 +36,7 @@ module.exports = {
       var obj = {
         player_id: model.player_id,
         name: model.name,
-        team: 'TEX',
+        team: model.team,
         filename: model.filename,
         position: model.position
       }
