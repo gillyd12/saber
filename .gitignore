@@ -111,6 +111,4 @@ ui/
 *.txt
 data
 *.zip
-input/Box Scores/*.txt
-input/Recaps/*.txt
 
