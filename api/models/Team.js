@@ -307,7 +307,7 @@ module.exports = {
       })
         .then(function (data) {
           "use strict";
-          // sails.log.info("found: " + data.short_name);
+          sails.log.info("loaded: " + data.short_name);
         })
         .catch(function (error) {
           sails.log.error(error.details);
