@@ -52,15 +52,18 @@ module.exports = {
     'use strict'
 
     // startup
-    return parser.getBatters(parser.getDirectoryContentNames("input/Box Scores"));
+    return parser.getBatters(parser.getDirectoryContentNames("input/boxscores"));
   },
 
   populate: function (callback, data) {
     "use strict";
-    Player.findOrCreate({player_id: data.player_id}, data.model)
+
+    sails.log.info("loading: " + data.model.name);
+
+    Player.findOrCreate({player_id: data.model.player_id}, data.model)
       .then(function (data) {
         "use strict";
-        sails.log.info("found: " + data.name);
+        // sails.log.info("found: " + data.name);
         callback();
       })
       .catch(function (error) {

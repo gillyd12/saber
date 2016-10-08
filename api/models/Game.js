@@ -103,7 +103,7 @@ module.exports = {
     'use strict'
 
     // startup
-    return parser.getScores(parser.getDirectoryContentNames("input/Recaps"));
+    return parser.getScores(parser.getDirectoryContentNames("input/recaps"));
   },
 
   populate: function (callback, data) {

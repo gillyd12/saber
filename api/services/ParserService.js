@@ -41,7 +41,7 @@ module.exports = {
 
         if (S(file).contains('.txt')) {
           obj.filename = S(file).chompRight('.txt').s;
-          var lines = fs.readFileSync('input/Recaps/' + file).toString().split("\n");
+          var lines = fs.readFileSync('input/recaps/' + file).toString().split("\n");
           obj.match_up = S(lines[0]).chompRight('\r').s;
           obj.date_of_game = S(lines[1]).chompRight('\r').s;
           for (var line of lines) {
@@ -116,7 +116,7 @@ module.exports = {
 
         if (S(file).contains('.txt')) {
           filename = S(file).chompRight('.txt').s;
-          var lines = fs.readFileSync('input/Box Scores/' + file).toString().split("\n");
+          var lines = fs.readFileSync('input/boxscores/' + file).toString().split("\n");
 
           visiting_team_abrv = S(US.strRight(US.strLeft(lines[4], ')'), '(')).trim().s
           home_team_abrv = S(US.strRight(US.strLeft(lines[5], ')'), '(')).trim().s
@@ -186,8 +186,8 @@ module.exports = {
     sails.log.info("beginning to remove contents from directory...");
     try {
       sails.log.info("removing contents from directory...");
-      fse.removeSync(from + '/Box Scores' + '/*.txt');
-      fse.removeSync(from + '/Recaps' + '/*.txt');
+      fse.removeSync(from + '/boxscores' + '/*.txt');
+      fse.removeSync(from + '/recaps' + '/*.txt');
       sails.log.info("completed removing contents from directory");
     } catch (err) {
       sails.log.error('error removing contents from directory: ' + err);
