@@ -63,6 +63,8 @@ module.exports = {
         losing_team: ""
       }
 
+      obj.home_score = self.determineHomeScore(obj, model);
+      obj.visiting_score = self.determineVisitingScore(obj, model);
       obj.winning_team = self.determineWinner(obj);
       obj.losing_team = self.determineLoser(obj);
 
@@ -70,6 +72,45 @@ module.exports = {
       resolve(res);
     });
     return promise;
+  },
+
+  determineHomeScore: function (obj, model) {
+    "use strict";
+
+    // home score
+    // model.match_up.substr(model.match_up.indexOf(' at ')+4, model.match_up.length)
+
+    try {
+      var winner = model.score.substr(0, model.score.indexOf(' '));
+
+      if (S(obj.home_team).contains(S(winner).capitalize().s)) {
+        return model.score.substr(model.match_up.indexOf(': ')-2, model.match_up.indexOf(': ')+2);
+      } else {
+        return model.score.substr(model.match_up.indexOf(': '), model.match_up.indexOf(': ')+4);
+        // return model.match_up.substr(model.match_up.indexOf(' at ')+4, model.match_up.length);
+      }
+    } catch (error) {
+      sails.log.error(error);
+    }
+
+    // visiting score
+    // model.score.substr(model.match_up.indexOf(': ')-2, model.match_up.indexOf(': ')+2),
+  },
+
+  determineVisitingScore: function (obj, model) {
+    "use strict";
+
+    try {
+      var winner = model.score.substr(0, model.score.indexOf(' '));
+
+      if (S(obj.visiting_team).contains(S(winner).capitalize().s)) {
+        return model.score.substr(model.match_up.indexOf(': ')-2, model.match_up.indexOf(': ')+2);
+      } else {
+        return model.score.substr(model.match_up.indexOf(': '), model.match_up.indexOf(': ')+4);
+      }
+    } catch (error) {
+      sails.log.error(error);
+    }
   },
 
   determineWinner: function (obj) {
