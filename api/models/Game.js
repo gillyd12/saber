@@ -81,7 +81,9 @@ module.exports = {
     // model.match_up.substr(model.match_up.indexOf(' at ')+4, model.match_up.length)
 
     try {
-      var winner = model.score.substr(0, model.score.indexOf(' '));
+      var winner = model.score.substr(0, model.score.indexOf('WIN')-1);
+
+      sails.log.info(winner);
 
       if (S(obj.home_team).contains(S(winner).capitalize().s)) {
         return model.score.substr(model.match_up.indexOf(': ')-2, model.match_up.indexOf(': ')+2);
@@ -101,7 +103,9 @@ module.exports = {
     "use strict";
 
     try {
-      var winner = model.score.substr(0, model.score.indexOf(' '));
+      var winner = model.score.substr(0, model.score.indexOf('WIN')-1);
+
+      sails.log.info(winner);
 
       if (S(obj.visiting_team).contains(S(winner).capitalize().s)) {
         return model.score.substr(model.match_up.indexOf(': ')-2, model.match_up.indexOf(': ')+2);
@@ -152,7 +156,7 @@ module.exports = {
     Game.findOrCreate({ game_id: data.model.game_id }, data.model)
       .then(function (data) {
         "use strict";
-        sails.log.info("found: " + data.game_id );
+        // sails.log.debug("found: " + data.game_id );
         callback();
       })
       .catch(function (error) {
