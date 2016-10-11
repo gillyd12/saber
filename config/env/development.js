@@ -34,6 +34,6 @@ module.exports = {
     }
   },
 
-   liftTimeout: 300000000
+   liftTimeout: 30000
 
 };

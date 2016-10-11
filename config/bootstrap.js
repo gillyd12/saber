@@ -19,17 +19,17 @@ module.exports.bootstrap = function(cb) {
 
     async.series([
       function(callback) {
-        dataService.reload(callback, Game);
-      },
-      function(callback) {
         League.init(callback, ['AL', 'NL']);
       },
       function(callback) {
         Team.init(callback);
       },
       function(callback) {
-        dataService.reload(callback, Player);
+        dataService.reload(callback, Game);
       },
+      function(callback) {
+        dataService.reload(callback, Player);
+      }
       // function(callback) {
       //   parser.moveDirectoryContent(callback, "input", "output");
       // }
