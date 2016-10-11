@@ -85,7 +85,7 @@ module.exports = {
 
       // sails.log.info(winner);
 
-      if (S(obj.home_team).contains(S(winner).capitalize().s)) {
+      if (S(obj.home_team.toLowerCase()).contains(winner.toLowerCase())) {
         return model.score.substr(model.match_up.indexOf(': ')-2, model.match_up.indexOf(': ')+2);
       } else {
         return model.score.substr(model.match_up.indexOf(': '), model.match_up.indexOf(': ')+4);
@@ -107,7 +107,7 @@ module.exports = {
 
       // sails.log.info(winner);
 
-      if (S(obj.visiting_team).contains(S(winner).capitalize().s)) {
+      if (S(obj.visiting_team.toLowerCase()).contains(winner.toLowerCase())) {
         return model.score.substr(model.match_up.indexOf(': ')-2, model.match_up.indexOf(': ')+2);
       } else {
         return model.score.substr(model.match_up.indexOf(': '), model.match_up.indexOf(': ')+4);
