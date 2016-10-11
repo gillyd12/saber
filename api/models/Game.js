@@ -83,7 +83,7 @@ module.exports = {
     try {
       var winner = model.score.substr(0, model.score.indexOf('WIN')-1);
 
-      sails.log.info(winner);
+      // sails.log.info(winner);
 
       if (S(obj.home_team).contains(S(winner).capitalize().s)) {
         return model.score.substr(model.match_up.indexOf(': ')-2, model.match_up.indexOf(': ')+2);
@@ -105,7 +105,7 @@ module.exports = {
     try {
       var winner = model.score.substr(0, model.score.indexOf('WIN')-1);
 
-      sails.log.info(winner);
+      // sails.log.info(winner);
 
       if (S(obj.visiting_team).contains(S(winner).capitalize().s)) {
         return model.score.substr(model.match_up.indexOf(': ')-2, model.match_up.indexOf(': ')+2);
