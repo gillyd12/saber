@@ -30,9 +30,9 @@ module.exports.bootstrap = function(cb) {
       function(callback) {
         dataService.reload(callback, Player);
       },
-      function(callback) {
-        parser.moveDirectoryContent(callback, "input", "output");
-      }
+      // function(callback) {
+      //   parser.moveDirectoryContent(callback, "input", "output");
+      // }
     ])
   });
 
