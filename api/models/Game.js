@@ -119,7 +119,7 @@ module.exports = {
   determineWinner: function (obj) {
     "use strict";
 
-    if (obj.home_score > obj.visiting_score) {
+    if (S(obj.home_score).toInt() > S(obj.visiting_score).toInt()) {
       return obj.home_team;
     } else {
       return obj.visiting_team;
@@ -130,7 +130,7 @@ module.exports = {
   determineLoser: function (obj) {
     "use strict";
 
-    if (obj.home_score > obj.visiting_score) {
+    if (S(obj.home_score).toInt() > S(obj.visiting_score).toInt()) {
       return obj.visiting_team;
     } else {
       return obj.home_team;
