@@ -316,8 +316,16 @@ module.exports = {
 
     callback();
 
-  }
+  },
 
+  getFullname: function(shortname) {
+    "use strict";
+    return Team.find({short_name: shortname});
+      // var shortWinName = team[0].short_name;
+      // if (game.winning_team && (S(game.winning_team).contains(shortWinName))) {
+      //   wins = wins + 1;
+      // }
+  }
 
 };
 
