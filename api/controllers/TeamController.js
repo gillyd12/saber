@@ -26,13 +26,15 @@ module.exports = {
             var wins = 0;
             var loses = 0;
             "use strict";
+            var count = 0;
             for (var game of games) {
-              if ((wins + loses) < params.count)
+              if ((wins + loses) < params.count) {
                 if (game.winning_team && (S(game.winning_team).contains(team[0].full_name))) {
                   wins = wins + 1;
                 } else if (game.losing_team && (S(game.losing_team).contains(team[0].full_name))) {
                   loses = loses + 1;
                 }
+              }
             }
 
             var s = {
