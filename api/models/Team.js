@@ -316,8 +316,12 @@ module.exports = {
 
     callback();
 
-  }
+  },
 
+  getFullname: function(shortname) {
+    "use strict";
+    return Team.find({short_name: shortname});
+  }
 
 };
 
