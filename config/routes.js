@@ -46,9 +46,19 @@ module.exports.routes = {
   *                                                                          *
   ***************************************************************************/
 
-  // TeamController
+  // global params
+  // count - limits the result
+  // year - determines which year to use in the query
+  //
 
   // /team/chc/record?count=30 - will get you the number of games the cubs won and lost in their last 30
-  'get /team/:abrv/record': {controller: 'TeamController', action: 'record', skipAssets: true},
+  // /team/chc/record - will get you the current record for the cubs in the current year
+  // /team/chc/record?year=2065 - will get you the record for the cubs in the year 2065
+  'get /team/:abrv/record': {controller: 'TeamController', action: 'getTeamRecord', skipAssets: true},
+
+  // /league/al/ - you will get every team in the AL and their record for current year
+  'get /league/:league/record': {controller: 'LeagueController', action: 'getLeagueRecord', skipAssets: true},
+  // /league/al/division/east/record - you will get every team in the AL east and their record for current year
+  'get /league/:league/division/:division/record': {controller: 'LeagueController', action: 'getDivisionRecord', skipAssets: true},
 
 };

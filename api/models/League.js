@@ -41,5 +41,10 @@ module.exports = {
 
   },
 
+  getTeams: function(league) {
+    "use strict";
+    return League.find({ where: { name: league }  }).populate('teams');
+  }
+
 };
 
