@@ -56,9 +56,9 @@ module.exports.routes = {
   // /team/chc/record?year=2065 - will get you the record for the cubs in the year 2065
   'get /team/:abrv/record': {controller: 'TeamController', action: 'getTeamRecord', skipAssets: true},
 
-  // /league/al/ - you will get every team in the AL and their record for current year
-  'get /league/:league/record': {controller: 'LeagueController', action: 'getLeagueRecord', skipAssets: true},
-  // /league/al/division/east/record - you will get every team in the AL east and their record for current year
-  'get /league/:league/division/:division/record': {controller: 'LeagueController', action: 'getDivisionRecord', skipAssets: true},
+  // /league/al/ - you will get every team in the AL
+  // 'get /league/:league': {controller: 'LeagueController', action: 'getLeague', skipAssets: true},
+  // /league/al/division/east - you will get every team in the AL east
+  'get /league/:league/division/:division': {controller: 'LeagueController', action: 'getDivision', skipAssets: true},
 
 };

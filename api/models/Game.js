@@ -13,7 +13,8 @@ module.exports = {
 
     game_id: {
       type: 'string',
-      unique: true
+      unique: true,
+      primaryKey: true
     },
 
     date: {
