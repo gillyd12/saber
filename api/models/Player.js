@@ -10,7 +10,9 @@ module.exports = {
   attributes: {
 
     player_id: {
-      type: 'string'
+      type: 'string',
+      unique: true,
+      primaryKey: true
     },
 
     name: {
@@ -60,14 +62,14 @@ module.exports = {
 
     sails.log.info("loading: " + data.model.name);
 
-    Player.findOrCreate({player_id: data.model.player_id}, data.model)
+    Player.create(data.model)
       .then(function (data) {
         "use strict";
         // sails.log.info("found: " + data.name);
         callback();
       })
       .catch(function (error) {
-        sails.log.error(error.details);
+        sails.log.info(error.details);
       });
 
   }
