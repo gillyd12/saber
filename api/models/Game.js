@@ -82,7 +82,7 @@ module.exports = {
     // model.match_up.substr(model.match_up.indexOf(' at ')+4, model.match_up.length)
 
     try {
-      var winner = model.score.substr(0, model.score.indexOf('WIN')-1);
+      var winner = model.score.substr(0, model.score.indexOf('WIN:')-1);
 
       // sails.log.info(winner);
 
@@ -103,7 +103,7 @@ module.exports = {
     "use strict";
 
     try {
-      var winner = model.score.substr(0, model.score.indexOf('WIN')-1);
+      var winner = model.score.substr(0, model.score.indexOf('WIN:')-1);
 
       // sails.log.info(winner);
 

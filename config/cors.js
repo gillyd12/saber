@@ -37,7 +37,7 @@ module.exports.cors = {
   *                                                                          *
   ***************************************************************************/
 
-  // allRoutes: false,
+  allRoutes: true,
 
   /***************************************************************************
   *                                                                          *
@@ -47,32 +47,35 @@ module.exports.cors = {
   *                                                                          *
   ***************************************************************************/
 
-  // origin: '*',
+  origin: process.env.HOST_URL,
+  //origin: 'http://localhost',
+  //origin: '*',
+
 
   /***************************************************************************
-  *                                                                          *
-  * Allow cookies to be shared for CORS requests?                            *
-  *                                                                          *
-  ***************************************************************************/
+   *                                                                          *
+   * Allow cookies to be shared for CORS requests?                            *
+   *                                                                          *
+   ***************************************************************************/
 
-  // credentials: true,
+  credentials: false,
 
   /***************************************************************************
-  *                                                                          *
-  * Which methods should be allowed for CORS requests? This is only used in  *
-  * response to preflight requests (see article linked above for more info)  *
-  *                                                                          *
-  ***************************************************************************/
+   *                                                                          *
+   * Which methods should be allowed for CORS requests? This is only used in  *
+   * response to preflight requests (see article linked above for more info)  *
+   *                                                                          *
+   ***************************************************************************/
 
   // methods: 'GET, POST, PUT, DELETE, OPTIONS, HEAD',
+  methods: 'GET',
 
   /***************************************************************************
-  *                                                                          *
-  * Which headers should be allowed for CORS requests? This is only used in  *
-  * response to preflight requests.                                          *
-  *                                                                          *
-  ***************************************************************************/
+   *                                                                          *
+   * Which headers should be allowed for CORS requests? This is only used in  *
+   * response to preflight requests.                                          *
+   *                                                                          *
+   ***************************************************************************/
 
-  // headers: 'content-type'
-
+  headers: 'content-type'
 };

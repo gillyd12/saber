@@ -147,8 +147,8 @@ module.exports = {
       },
       {
         short_name: 'SEA',
-        full_name: 'Seatle Mariners',
-        city: 'Seatte',
+        full_name: 'Seattle Mariners',
+        city: 'Seattle',
         maskot: 'Mariners',
         division: 'West',
         league: 'AL'
@@ -163,14 +163,12 @@ module.exports = {
       },
       {
         short_name: 'OAK',
-        full_name: 'Oakland As',
+        full_name: 'Oakland Athletics',
         city: 'Oakland',
         maskot: 'As',
         division: 'West',
         league: 'AL'
       },
-
-
       {
         short_name: 'WAS',
         full_name: 'Washington Nationals',
@@ -222,7 +220,7 @@ module.exports = {
       },
       {
         short_name: 'STL',
-        full_name: 'St.Louis Cardinals',
+        full_name: 'St. Louis Cardinals',
         city: 'St. Louis',
         maskot: 'Cardinals',
         division: 'Central',
