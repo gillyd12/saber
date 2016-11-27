@@ -17,6 +17,10 @@ module.exports = {
       primaryKey: true
     },
 
+    filename: {
+      type: 'string'
+    },
+
     date: {
       type: 'datetime'
     },
@@ -43,7 +47,14 @@ module.exports = {
 
     losing_team: {
       type: 'string'
+    },
+
+    // Add a reference to players
+    participants: {
+      collection: 'Participant',
+      via: 'game'
     }
+
 
   },
 
@@ -55,6 +66,7 @@ module.exports = {
 
       var obj = {
         game_id: model.filename,
+        filename: model.filename,
         date: model.date_of_game,
         home_team: model.match_up.substr(model.match_up.indexOf(' at ')+4, model.match_up.length),
         home_score: model.score.substr(model.score.lastIndexOf('-')+1, model.score.length),
