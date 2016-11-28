@@ -53,7 +53,7 @@ module.exports = {
     'use strict'
 
     // startup
-    return parser.getBatters(parser.getDirectoryContentNames("input/boxscores"));
+    return parser.getParticipants(parser.getDirectoryContentNames("input/boxscores"));
   },
 
   populate: function (callback, data) {
