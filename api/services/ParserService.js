@@ -600,6 +600,7 @@ module.exports = {
       sails.log.info("removing contents from directory...");
       fse.removeSync(from + '/boxscores' + '/*.txt');
       fse.removeSync(from + '/recaps' + '/*.txt');
+      fse.removeSync(from + '/players' + '/*.csv');
       sails.log.info("completed removing contents from directory");
     } catch (err) {
       sails.log.error('error removing contents from directory: ' + err);
