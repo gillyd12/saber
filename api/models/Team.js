@@ -5,6 +5,10 @@
  * @docs        :: http://sailsjs.org/#!documentation/models
  */
 
+var teams;
+var S = require('string');
+var _ = require('underscore');
+
 module.exports = {
 
   attributes: {
@@ -46,7 +50,7 @@ module.exports = {
   init: function (callback) {
     "use strict";
 
-    var teams = [
+    this.teams = [
       {
         short_name: 'TOR',
         full_name: 'Toronto Blue Jays',
@@ -294,7 +298,7 @@ module.exports = {
 
     ]
 
-    for (var team of teams) {
+    for (var team of this.teams) {
       Team.findOrCreate({short_name: team.short_name}, {
         short_name: team.short_name,
         full_name: team.full_name,
@@ -319,6 +323,23 @@ module.exports = {
   getFullname: function(shortname) {
     "use strict";
     return Team.find({short_name: shortname});
+  },
+
+  getDivisionTeams: function(team) {
+    "use strict";
+
+    /* refactor this out of the model into a calculation service */
+
+    var teamOfInterest = _.findWhere(this.teams, {short_name: team.toUpperCase()});
+
+    var teamsOfInterest = _.where(this.teams, {division: teamOfInterest.division, league: teamOfInterest.league})
+
+    var divisionTeams = _.filter(teamsOfInterest, function (teamOfInterest) {
+      return teamOfInterest.short_name != team.toUpperCase()
+    })
+
+    return divisionTeams;
+
   }
 
 };
