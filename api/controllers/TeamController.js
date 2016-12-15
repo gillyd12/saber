@@ -88,24 +88,77 @@ var calculate = function (callback, games, team, count) {
         }
         rspg = runsScored / teamGames;
         rapg = runsAllowed / teamGames;
-        pyth = (runsScored * 1.81) / ((runsScored * 1.81) + (runsAllowed * 1.81))
+        pyth = (runsScored * 1.81) / ((runsScored * 1.81) + (runsAllowed * 1.81));
+
         callback();
       }
     }, function(err){
+
+      if (err) {
+        sails.log.error('error calculating data: ' + err);
+        reject(err);
+      }
 
       calculations = {
         team: team[0].full_name,
         runsScored: runsScored,
         runsAllowed: runsAllowed,
-        rspg: rspg,
-        rapg: rapg,
-        pyth: pyth,
-        sod: 0
+        rspg: Math.round(rspg * 100) / 100,
+        rapg: Math.round(rapg * 100) / 100,
+        pyth: Math.round(pyth * 100) / 100
       };
 
       resolve(calculations);
       // if any of the saves produced an error, err would equal that error
     });
+  })
+}
+var sod = function (callback, short_name, games, count, calculations) {
+  "use strict";
+
+  return new Promise(function (resolve, reject) {
+
+    var teams = Team.getDivisionTeams(short_name);
+
+    var calculation = 0;
+    var pyth = 0;
+
+    var runsScored = 0;
+    var runsAllowed = 0;
+    var wins = 0;
+    var loses = 0;
+    var teamGames = 0;
+
+    async.each(teams, function(team, callback) {
+
+        async.each(games, function (game, callback) {
+          if ((wins + loses) < count) {
+            if (game.winning_team && (S(game.winning_team).contains(team.full_name))) {
+              wins = wins + 1;
+              teamGames = teamGames + 1;
+              runsScored = runsScored + game.winning_score;
+            } else if (game.losing_team && (S(game.losing_team).contains(team.full_name))) {
+              loses = loses + 1;
+              teamGames = teamGames + 1;
+              runsAllowed = runsAllowed + game.losing_score;
+            }
+            pyth = (runsScored * 1.81) / ((runsScored * 1.81) + (runsAllowed * 1.81));
+
+          }
+          callback();
+        }, function (err) {
+          calculation = calculation + (pyth / teams.length);
+
+          calculations.sod = Math.round(calculation * 100) / 100;
+
+          resolve(calculations);
+          // if any of the saves produced an error, err would equal that error
+        })
+
+      callback();
+      }, function(err) {
+      resolve(calculations);
+    })
 
   })
 }
@@ -274,6 +327,13 @@ module.exports = {
       },
       (team, games, callback) => {
         calculate(callback, games, team, params.count)
+          .then(function (calculations) {
+            "use strict";
+            callback(null, games, team, calculations);
+          })
+      },
+      (games, team, calculations, callback) => {
+        sod(callback, params.team, games, params.count, calculations)
           .then(function (result) {
             "use strict";
             callback(null, result);
@@ -285,65 +345,6 @@ module.exports = {
     });
 
   }
-
-}
-
-function calculateSOD(name, year, count) {
-  "use strict";
-
-  /* refactor into own calculation service for all calculations */
-
-  var teams = Team.getDivisionTeams(name);
-
-  var sodCalc = 0;
-
-  /* beginning of refactor */
-  return Promise.all(teams)
-    .then(function (results) {
-      results.forEach(function (team) {
-        return Team.getFullname(team)
-          .then(function (response) {
-            var query;
-            if (year) {
-              query = Game.find({
-                game_id: {
-                  'startsWith': year
-                }
-              });
-            } else {
-              query = Game.find()
-            }
-            return query.sort('date desc')
-              .then(function (games) {
-                "use strict";
-
-                var runsScored = 0;
-                var runsAllowed = 0;
-                var wins = 0;
-                var loses = 0;
-
-                for (var game of games) {
-                  if ((wins + loses) < count) {
-                    if (game.winning_team && (S(game.winning_team).contains(team.full_name))) {
-                      wins = wins + 1;
-                      runsScored = runsScored + game.winning_score;
-                    } else if (game.losing_team && (S(game.losing_team).contains(team.full_name))) {
-                      loses = loses + 1;
-                      runsAllowed = runsAllowed + game.losing_score;
-                    }
-                  }
-                }
-
-                var pyth = (runsScored * 1.81) / ((runsScored * 1.81) + (runsAllowed * 1.81))
-                sodCalc = sodCalc + (pyth / teams.length);
-              })
-
-          })
-          .catch(function (error) {
-            sails.log.error(error);
-          })
-      })
-    })
 
 }
 
