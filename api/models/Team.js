@@ -325,6 +325,11 @@ module.exports = {
     return Team.find({short_name: shortname});
   },
 
+  getTeams: function() {
+    "use strict";
+    return this.teams;
+  },
+
   getDivisionTeams: function(team) {
     "use strict";
 

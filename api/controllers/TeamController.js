@@ -5,7 +5,10 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
+var teamService = require('../services/TeamService');
+
 var S = require('string');
+
 var init = function (req) {
   "use strict";
 
@@ -28,14 +31,6 @@ var init = function (req) {
   return params;
 
 };
-var getTeam = function (short_name) {
-  "use strict";
-  return Team.getFullname(short_name);
-  // .then(function (team) {
-  //   return team;
-  // })
-
-};
 var configureQuery = function (year) {
   "use strict";
   var query = '';
@@ -53,13 +48,7 @@ var configureQuery = function (year) {
   return query;
 
 };
-var sort = function (query) {
-  "use strict";
-  return query.sort("date desc");
-  // .then(function (games) {
-  //   return games;
-  // })
-}
+
 var calculate = function (callback, games, team, count) {
   "use strict";
 
@@ -75,7 +64,7 @@ var calculate = function (callback, games, team, count) {
     var pyth = 0;
     var calculations = {}
 
-    async.each(games, function(game, callback) {
+    async.each(games, function (game, callback) {
       if ((wins + loses) < count) {
         if (game.winning_team && (S(game.winning_team).contains(team[0].full_name))) {
           wins = wins + 1;
@@ -92,7 +81,7 @@ var calculate = function (callback, games, team, count) {
 
         callback();
       }
-    }, function(err){
+    }, function (err) {
 
       if (err) {
         sails.log.error('error calculating data: ' + err);
@@ -113,6 +102,7 @@ var calculate = function (callback, games, team, count) {
     });
   })
 }
+
 var sod = function (callback, short_name, games, count, calculations) {
   "use strict";
 
@@ -129,111 +119,125 @@ var sod = function (callback, short_name, games, count, calculations) {
     var loses = 0;
     var teamGames = 0;
 
-    async.each(teams, function(team, callback) {
+    async.each(teams, function (team, callback) {
 
-        async.each(games, function (game, callback) {
-          if ((wins + loses) < count) {
-            if (game.winning_team && (S(game.winning_team).contains(team.full_name))) {
-              wins = wins + 1;
-              teamGames = teamGames + 1;
-              runsScored = runsScored + game.winning_score;
-            } else if (game.losing_team && (S(game.losing_team).contains(team.full_name))) {
-              loses = loses + 1;
-              teamGames = teamGames + 1;
-              runsAllowed = runsAllowed + game.losing_score;
-            }
-            pyth = (runsScored * 1.81) / ((runsScored * 1.81) + (runsAllowed * 1.81));
-
+      async.each(games, function (game, callback) {
+        if ((wins + loses) < count) {
+          if (game.winning_team && (S(game.winning_team).contains(team.full_name))) {
+            wins = wins + 1;
+            teamGames = teamGames + 1;
+            runsScored = runsScored + game.winning_score;
+          } else if (game.losing_team && (S(game.losing_team).contains(team.full_name))) {
+            loses = loses + 1;
+            teamGames = teamGames + 1;
+            runsAllowed = runsAllowed + game.losing_score;
           }
-          callback();
-        }, function (err) {
-          calculation = calculation + (pyth / teams.length);
+          pyth = (runsScored * 1.81) / ((runsScored * 1.81) + (runsAllowed * 1.81));
 
-          calculations.sod = Math.round(calculation * 100) / 100;
+        }
+        callback();
+      }, function (err) {
+        calculation = calculation + (pyth / teams.length);
 
-          resolve(calculations);
-          // if any of the saves produced an error, err would equal that error
-        })
+        calculations.sod = Math.round(calculation * 100) / 100;
+
+        resolve(calculations);
+        // if any of the saves produced an error, err would equal that error
+      })
 
       callback();
-      }, function(err) {
+    }, function (err) {
       resolve(calculations);
     })
 
   })
 }
 
-module.exports = {
+var calculateStatistics = function (callback, games, count, year) {
+  "use strict";
 
-  getTeamRecord: function (req, res) {
+  return new Promise(function (resolve, reject) {
 
-    var params = {
-      team: req.param('abrv')
-    };
+    var teams = Team.getTeams();
 
-    if (req.param('count')) {
-      params.count = req.param('count');
-    } else {
-      params.count = '162';
-    }
+    /* calculation variables */
 
-    if (req.param('year')) {
-      params.year = req.param('year').substr(2, 4)
-    }
+    async.each(teams, function (team, callback) {
 
-    if (params.team) {
+      var pyth = 0;
+      var runsScored = 0;
+      var runsAllowed = 0;
+      var wins = 0;
+      var loses = 0;
+      var teamGames = 0;
 
-      Team.getFullname(params.team)
-        .then(function (team) {
-          "use strict";
-          var query;
-          if (params.year) {
-            query = Game.find({
-              game_id: {
-                'startsWith': params.year
-              }
-            });
-          } else {
-            query = Game.find()
+      /* annotate the teams */
+
+      async.each(games, function (game, callback) {
+        if ((wins + loses) < count) {
+          if (game.winning_team && (S(game.winning_team).contains(team.full_name))) {
+            wins = wins + 1;
+            teamGames = teamGames + 1;
+            runsScored = runsScored + game.winning_score;
+          } else if (game.losing_team && (S(game.losing_team).contains(team.full_name))) {
+            loses = loses + 1;
+            teamGames = teamGames + 1;
+            runsAllowed = runsAllowed + game.losing_score;
           }
-          query.sort('date desc')
-            .then(function (games) {
+          pyth = (runsScored * 1.81) / ((runsScored * 1.81) + (runsAllowed * 1.81));
 
-              var wins = 0;
-              var loses = 0;
-              "use strict";
-              var count = 0;
-              for (var game of games) {
-                if ((wins + loses) < params.count) {
-                  if (game.winning_team && (S(game.winning_team).contains(team[0].full_name))) {
-                    wins = wins + 1;
-                  } else if (game.losing_team && (S(game.losing_team).contains(team[0].full_name))) {
-                    loses = loses + 1;
-                  }
-                }
-              }
+        }
+        callback();
+      }, function (err) {
 
-              var s = {
-                team: params.team,
-                record: {
-                  wins: wins,
-                  loses: loses
-                }
-              };
+        var statistics = {
+          loses: 0,
+          wins: 0,
+          games_played: 0,
+          last20Wins: 0,
+          last20Losses: 0,
+          streak: 0,
+          rspg: 0,
+          rapg: 0,
+          sod: 0,
+          pyth: 0,
+          rating: 0
+        }
 
-              return res.send(s);
+        statistics.wins = wins;
+        statistics.loses = loses;
+        statistics.rspg = Math.round((runsScored / teamGames) * 100) / 100;
+        statistics.rapg = Math.round((runsAllowed / teamGames) * 100) / 100;
+        statistics.pyth = Math.round(pyth * 100) / 100;
+        statistics.games_played = teamGames;
 
-            })
-        })
-        .catch(function (error) {
-          sails.log.error(error);
-          return res.notFound();
-        })
+        async.waterfall([
+          (callback) => {
+            "use strict";
+            teamService.getTeamRecord(team, year, 20)
+              .then(function (result) {
+                callback(null, result);
+              })
+          }
+        ], function (err, result) {
+          statistics.last20Wins = result.record.wins;
+          statistics.last20Losses = result.record.loses;
+          team.statistics = statistics;
+          // resolve(teams);
+          callback();
+        });
+      })
 
-    } else {
-      return res.notFound();
-    }
-  },
+    }, function (err) {
+      resolve(teams);
+      // resolve(calculations);
+    })
+
+  })
+}
+
+
+module.exports = {
 
   getStreak: function (req, res) {
 
@@ -266,7 +270,7 @@ module.exports = {
           } else {
             query = Game.find()
           }
-          query.sort('date desc')
+          teamService.sortDate(query, 'desc')
             .then(function (games) {
 
               var streak = 0;
@@ -313,32 +317,18 @@ module.exports = {
     async.waterfall([
       (callback) => {
         "use strict";
-        getTeam(params.team)
-          .then(function (team) {
-            callback(null, query, team)
-          })
-      },
-      (query, team, callback) => {
-        "use strict";
-        sort(query)
+        teamService.sortDate(query, 'desc')
           .then(function (games) {
-            callback(null, team, games);
+            callback(null, games);
           })
       },
-      (team, games, callback) => {
-        calculate(callback, games, team, params.count)
-          .then(function (calculations) {
+      (games, callback) => {
+        calculateStatistics(callback, games, params.count, params.year)
+          .then(function (results) {
             "use strict";
-            callback(null, games, team, calculations);
+            // callback(null, games, team, calculations);
+            callback(null, results);
           })
-      },
-      (games, team, calculations, callback) => {
-        sod(callback, params.team, games, params.count, calculations)
-          .then(function (result) {
-            "use strict";
-            callback(null, result);
-          })
-
       },
     ], function (err, result) {
       return res.send(result);
