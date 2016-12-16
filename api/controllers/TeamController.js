@@ -103,56 +103,6 @@ var calculate = function (callback, games, team, count) {
   })
 }
 
-var sod = function (callback, short_name, games, count, calculations) {
-  "use strict";
-
-  return new Promise(function (resolve, reject) {
-
-    var teams = Team.getDivisionTeams(short_name);
-
-    var calculation = 0;
-    var pyth = 0;
-
-    var runsScored = 0;
-    var runsAllowed = 0;
-    var wins = 0;
-    var loses = 0;
-    var teamGames = 0;
-
-    async.each(teams, function (team, callback) {
-
-      async.each(games, function (game, callback) {
-        if ((wins + loses) < count) {
-          if (game.winning_team && (S(game.winning_team).contains(team.full_name))) {
-            wins = wins + 1;
-            teamGames = teamGames + 1;
-            runsScored = runsScored + game.winning_score;
-          } else if (game.losing_team && (S(game.losing_team).contains(team.full_name))) {
-            loses = loses + 1;
-            teamGames = teamGames + 1;
-            runsAllowed = runsAllowed + game.losing_score;
-          }
-          pyth = (runsScored * 1.81) / ((runsScored * 1.81) + (runsAllowed * 1.81));
-
-        }
-        callback();
-      }, function (err) {
-        calculation = calculation + (pyth / teams.length);
-
-        calculations.sod = Math.round(calculation * 100) / 100;
-
-        resolve(calculations);
-        // if any of the saves produced an error, err would equal that error
-      })
-
-      callback();
-    }, function (err) {
-      resolve(calculations);
-    })
-
-  })
-}
-
 var calculateStatistics = function (callback, games, count, year) {
   "use strict";
 
@@ -170,6 +120,7 @@ var calculateStatistics = function (callback, games, count, year) {
       var wins = 0;
       var loses = 0;
       var teamGames = 0;
+      var streak = 0;
 
       /* annotate the teams */
 
@@ -179,10 +130,13 @@ var calculateStatistics = function (callback, games, count, year) {
             wins = wins + 1;
             teamGames = teamGames + 1;
             runsScored = runsScored + game.winning_score;
+            streak = streak + 1;
           } else if (game.losing_team && (S(game.losing_team).contains(team.full_name))) {
             loses = loses + 1;
             teamGames = teamGames + 1;
             runsAllowed = runsAllowed + game.losing_score;
+            streak = streak - 1;
+
           }
           pyth = (runsScored * 1.81) / ((runsScored * 1.81) + (runsAllowed * 1.81));
 
@@ -210,104 +164,51 @@ var calculateStatistics = function (callback, games, count, year) {
         statistics.rapg = Math.round((runsAllowed / teamGames) * 100) / 100;
         statistics.pyth = Math.round(pyth * 100) / 100;
         statistics.games_played = teamGames;
+        statistics.streak = streak;
 
         async.waterfall([
           (callback) => {
             "use strict";
             teamService.getTeamRecord(team, year, 20)
               .then(function (result) {
+                callback(null, games, team, result);
+              })
+          },
+          (games, team, result, callback) => {
+            "use strict";
+            teamService.sod(team, result, 162, games)
+              .then(function (result) {
                 callback(null, result);
               })
-          }
+          },
         ], function (err, result) {
           statistics.last20Wins = result.record.wins;
           statistics.last20Losses = result.record.loses;
+          statistics.sod = result.sod;
+
           team.statistics = statistics;
-          // resolve(teams);
+          team.statistics.rating = Math.round(((statistics.wins + statistics.last20Wins + (statistics.rspg / 2))
+                        -(statistics.loses + statistics.last20Losses + (statistics.rapg /2))
+                        +(statistics.streak)
+                        +(((statistics.sod - .5) * 100) / statistics.games_played)
+                        +(statistics.pyth - .5)) * 100) / 100;
+
           callback();
         });
       })
 
     }, function (err) {
-      resolve(teams);
-      // resolve(calculations);
+      var list = _.sortBy(teams, function(team) {
+        return team.statistics.rating;
+      })
+      list.reverse();
+      resolve(list);
     })
 
   })
 }
 
-
 module.exports = {
-
-  getStreak: function (req, res) {
-
-    var params = {
-      team: req.param('abrv')
-    };
-
-    if (req.param('count')) {
-      params.count = req.param('count');
-    } else {
-      params.count = '162';
-    }
-
-    if (req.param('year')) {
-      params.year = req.param('year').substr(2, 4)
-    }
-
-    if (params.team) {
-
-      Team.getFullname(params.team)
-        .then(function (team) {
-          "use strict";
-          var query;
-          if (params.year) {
-            query = Game.find({
-              game_id: {
-                'startsWith': params.year
-              }
-            });
-          } else {
-            query = Game.find()
-          }
-          teamService.sortDate(query, 'desc')
-            .then(function (games) {
-
-              var streak = 0;
-              var wins = 0;
-              var loses = 0;
-              "use strict";
-              var count = 0;
-              for (var game of games) {
-                if ((wins + loses) < params.count) {
-                  if (game.winning_team && (S(game.winning_team).contains(team[0].full_name))) {
-                    wins = wins + 1;
-                    streak = streak + 1;
-                  } else if (game.losing_team && (S(game.losing_team).contains(team[0].full_name))) {
-                    loses = loses + 1;
-                    streak = streak - 1;
-                  }
-                }
-              }
-
-              var s = {
-                team: params.team,
-                streak: streak
-              };
-
-              return res.send(s);
-
-            })
-        })
-        .catch(function (error) {
-          sails.log.error(error);
-          return res.notFound();
-        })
-
-    } else {
-      return res.notFound();
-    }
-  },
 
   getStats: function (req, res) {
 

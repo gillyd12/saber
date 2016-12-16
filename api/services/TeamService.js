@@ -95,7 +95,52 @@ module.exports = {
         reject(error);
       }
     })
-  }
+  },
 
+  sod: function (team, statistics, count, games) {
+    "use strict";
+
+    return new Promise(function (resolve, reject) {
+
+      var calculation = 0;
+      var pyth = 0;
+
+      var runsScored = 0;
+      var runsAllowed = 0;
+      var wins = 0;
+      var loses = 0;
+      var teamGames = 0;
+
+      var teams = Team.getDivisionTeams(team.short_name);
+
+      async.each(teams, function (team, callback) {
+
+        async.each(games, function (game, callback) {
+          if ((wins + loses) < count) {
+            if (game.winning_team && (S(game.winning_team).contains(team.full_name))) {
+              runsScored = runsScored + game.winning_score;
+            } else if (game.losing_team && (S(game.losing_team).contains(team.full_name))) {
+              runsAllowed = runsAllowed + game.losing_score;
+            }
+            pyth = (runsScored * 1.81) / ((runsScored * 1.81) + (runsAllowed * 1.81));
+
+          }
+          callback();
+        }, function (err) {
+          calculation = calculation + (pyth / teams.length);
+
+          statistics.sod = Math.round(calculation * 100) / 100;
+
+          // resolve(calculations);
+          // if any of the saves produced an error, err would equal that error
+        })
+
+        callback();
+      }, function (err) {
+        resolve(statistics);
+      })
+
+    })
+  }
 
 };
