@@ -44,7 +44,14 @@ module.exports = {
 
       if (team) {
 
-        Team.getFullname(team.short_name)
+        var team_selected = {}
+        if (!team.short_name) {
+          team_selected.short_name = team;
+        } else {
+          team_selected.short_name = team.short_name;
+        }
+
+        Team.getFullname(team_selected.short_name)
           .then(function (team) {
             "use strict";
             var query;
@@ -74,7 +81,7 @@ module.exports = {
                 }
 
                 var s = {
-                  team: team.short_name,
+                  team: team_selected.short_name,
                   record: {
                     wins: wins,
                     loses: loses

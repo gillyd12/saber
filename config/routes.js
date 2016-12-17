@@ -55,7 +55,7 @@ module.exports.routes = {
   // /team/chc/record - will get you the current record for the cubs in the current year
   // /team/chc/record?year=2065 - will get you the record for the cubs in the year 2065
   'get /team/:abrv/record': {controller: 'TeamController', action: 'getTeamRecord', skipAssets: true},
-  'get /team/:abrv/record/streak': {controller: 'TeamController', action: 'getStreak', skipAssets: true},
+  // 'get /team/:abrv/record/streak': {controller: 'TeamController', action: 'getStreak', skipAssets: true},
   // 'get /team/:abrv/stats': {controller: 'TeamController', action: 'getStats', skipAssets: true},
   'get /team/stats': {controller: 'TeamController', action: 'getStats', skipAssets: true},
 

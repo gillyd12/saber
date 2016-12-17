@@ -49,60 +49,6 @@ var configureQuery = function (year) {
 
 };
 
-var calculate = function (callback, games, team, count) {
-  "use strict";
-
-  return new Promise(function (resolve, reject) {
-
-    var runsScored = 0;
-    var runsAllowed = 0;
-    var wins = 0;
-    var loses = 0;
-    var teamGames = 0;
-    var rspg = 0;
-    var rapg = 0;
-    var pyth = 0;
-    var calculations = {}
-
-    async.each(games, function (game, callback) {
-      if ((wins + loses) < count) {
-        if (game.winning_team && (S(game.winning_team).contains(team[0].full_name))) {
-          wins = wins + 1;
-          teamGames = teamGames + 1;
-          runsScored = runsScored + game.winning_score;
-        } else if (game.losing_team && (S(game.losing_team).contains(team[0].full_name))) {
-          loses = loses + 1;
-          teamGames = teamGames + 1;
-          runsAllowed = runsAllowed + game.losing_score;
-        }
-        rspg = runsScored / teamGames;
-        rapg = runsAllowed / teamGames;
-        pyth = (runsScored * 1.81) / ((runsScored * 1.81) + (runsAllowed * 1.81));
-
-        callback();
-      }
-    }, function (err) {
-
-      if (err) {
-        sails.log.error('error calculating data: ' + err);
-        reject(err);
-      }
-
-      calculations = {
-        team: team[0].full_name,
-        runsScored: runsScored,
-        runsAllowed: runsAllowed,
-        rspg: Math.round(rspg * 100) / 100,
-        rapg: Math.round(rapg * 100) / 100,
-        pyth: Math.round(pyth * 100) / 100
-      };
-
-      resolve(calculations);
-      // if any of the saves produced an error, err would equal that error
-    });
-  })
-}
-
 var calculateStatistics = function (callback, games, count, year) {
   "use strict";
 
@@ -235,8 +181,19 @@ module.exports = {
       return res.send(result);
     });
 
-  }
+  },
 
+  getTeamRecord: function (req, res) {
+    "use strict";
+
+    var params = init(req);
+
+    teamService.getTeamRecord(params.team, params.year, params.count)
+      .then(function (result) {
+        return res.send(result);
+      })
+  }
 }
+
 
 /* this method calculates the average pythagorean winning % of the other teams in your division */
