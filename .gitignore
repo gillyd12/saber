@@ -111,4 +111,5 @@ ui/
 *.txt
 data
 *.zip
+*.csv
 

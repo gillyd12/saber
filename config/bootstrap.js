@@ -28,8 +28,11 @@ module.exports.bootstrap = function (cb) {
       dataService.reload(callback, Player);
     },
     function (callback) {
-      parser.moveDirectoryContent(callback, "input", "output");
+      dataService.reload(callback, Participant);
     },
+    // function (callback) {
+    //   parser.moveDirectoryContent(callback, "input", "output");
+    // },
     function (callback) {
       return cb();
     }

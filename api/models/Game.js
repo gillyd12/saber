@@ -43,7 +43,14 @@ module.exports = {
 
     losing_team: {
       type: 'string'
+    },
+
+    // Add a reference to players
+    participants: {
+      collection: 'Participant',
+      via: 'game'
     }
+
 
   },
 
@@ -61,13 +68,17 @@ module.exports = {
         visiting_team: model.match_up.substr(0, model.match_up.indexOf(' at ')),
         visiting_score: model.score.substr(model.match_up.indexOf(': ')-2, model.match_up.indexOf(': ')+2),
         winning_team: "",
-        losing_team: ""
+        losing_team: "",
+        winning_score: "",
+        losing_score: ""
       }
 
       obj.home_score = self.determineHomeScore(obj, model);
       obj.visiting_score = self.determineVisitingScore(obj, model);
       obj.winning_team = self.determineWinner(obj);
       obj.losing_team = self.determineLoser(obj);
+      obj.winning_score = self.determineWinningScore(obj);
+      obj.losing_score = self.determineLosingScore(obj);
 
       res.model = obj;
       resolve(res);
@@ -128,6 +139,17 @@ module.exports = {
 
   },
 
+  determineWinningScore: function (obj) {
+    "use strict";
+
+    if (S(obj.home_score).toInt() > S(obj.visiting_score).toInt()) {
+      return S(obj.home_score).toInt();
+    } else {
+      return S(obj.visiting_score).toInt();
+    }
+
+  },
+
   determineLoser: function (obj) {
     "use strict";
 
@@ -135,6 +157,17 @@ module.exports = {
       return obj.visiting_team;
     } else {
       return obj.home_team;
+    }
+
+  },
+
+  determineLosingScore: function (obj) {
+    "use strict";
+
+    if (S(obj.home_score).toInt() > S(obj.visiting_score).toInt()) {
+      return S(obj.visiting_score).toInt();
+    } else {
+      return S(obj.home_score).toInt();
     }
 
   },
