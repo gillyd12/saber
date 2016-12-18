@@ -24,9 +24,9 @@ module.exports.bootstrap = function (cb) {
     function (callback) {
       dataService.reload(callback, Game);
     },
-    // function (callback) {
-    //   dataService.reload(callback, Player);
-    // },
+    function (callback) {
+      dataService.reload(callback, Player);
+    },
     function (callback) {
       dataService.reload(callback, Participant);
     },
