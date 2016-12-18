@@ -57,8 +57,12 @@ module.exports.routes = {
   'get /team/:abrv/record': {controller: 'TeamController', action: 'getTeamRecord', skipAssets: true},
   // 'get /team/:abrv/record/streak': {controller: 'TeamController', action: 'getStreak', skipAssets: true},
   // 'get /team/:abrv/stats': {controller: 'TeamController', action: 'getStats', skipAssets: true},
+
+  /* returns all the teams and the associated team stats */
   'get /team/stats': {controller: 'TeamController', action: 'getStats', skipAssets: true},
 
+  /* returns all the teams and the associated records */
+  'get /team/records': {controller: 'TeamController', action: 'getRecords', skipAssets: true},
 
   // /league/al/ - you will get every team in the AL
   // 'get /league/:league': {controller: 'LeagueController', action: 'getLeague', skipAssets: true},

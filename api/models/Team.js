@@ -327,7 +327,7 @@ module.exports = {
 
   getTeams: function() {
     "use strict";
-    return this.teams;
+    return Team.find({});
   },
 
   getDivisionTeams: function(team) {
