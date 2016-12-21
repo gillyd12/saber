@@ -46,14 +46,19 @@ module.exports = {
 
       sails.log.info("loading " + model.adapter.identity + " ...");
 
-      _(records).forEach(function (value) {
-        var a;
-        var res = {};
-        model.map(a, res, value).then(function (data) {
-          "use strict";
-          model.populate(callback, data);
+      if (records && records.length > 0) {
+        _(records).forEach(function (value) {
+          var a;
+          var res = {};
+          model.map(a, res, value).then(function (data) {
+            "use strict";
+            model.populate(callback, data);
+          })
         })
-      })
+      } else {
+        // empty folder
+        callback();
+      }
 
     } catch (error) {
       sails.log.error(error);
