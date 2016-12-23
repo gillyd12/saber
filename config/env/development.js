@@ -19,7 +19,7 @@ module.exports = {
 
   models: {
     connection: 'mongolabs',
-    migrate: 'alter'
+    migrate: 'safe'
   },
 
   connections: {
