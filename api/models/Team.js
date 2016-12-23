@@ -51,7 +51,6 @@ module.exports = {
       via: 'team'
     },
 
-
     // Add a reference to players
     players: {
       collection: 'player',

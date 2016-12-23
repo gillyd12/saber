@@ -163,6 +163,7 @@ module.exports = {
 
   },
 
+  /* todo move this to a service at some point */
   load: function (parser) {
     'use strict'
 

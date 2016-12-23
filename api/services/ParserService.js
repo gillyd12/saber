@@ -59,6 +59,8 @@ module.exports = {
   getScores: function (files) {
     "use strict";
 
+    scores = [];
+
     try {
 
       for (var file of files) {
