@@ -17,7 +17,12 @@ module.exports = {
 
     name: {
       type: 'string'
+    },
+
+    team: {
+      model: 'team'
     }
+
 
     // position: {
     //   type: 'string'
@@ -955,12 +960,9 @@ module.exports = {
   populate: function (callback, data) {
     "use strict";
 
-    sails.log.info("loading: " + data.model.name);
-
     Player.create(data.model)
       .then(function (data) {
         "use strict";
-        // sails.log.info("found: " + data.name);
         callback();
       })
       .catch(function (error) {

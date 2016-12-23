@@ -15,7 +15,7 @@ module.exports = {
     try {
       model.destroy()
         .then(function (data) {
-          sails.log.info(model.adapter.identity + " destroyed");
+          // sails.log.info(model.adapter.identity + " destroyed");
         })
         .catch(function (error) {
           sails.log.error(error);
@@ -30,7 +30,7 @@ module.exports = {
     model.count({ winning_team: team })
       .then(function (data) {
         "use strict";
-        sails.log.info("found: " + data);
+        // sails.log.info("found: " + data);
       })
       .catch(function (error) {
         sails.log.error(error.details);
@@ -44,7 +44,7 @@ module.exports = {
 
       var records = model.load(parser);
 
-      sails.log.info("loading " + model.adapter.identity + " ...");
+      // sails.log.info("loading " + model.adapter.identity + " ...");
 
       if (records && records.length > 0) {
         _(records).forEach(function (value) {

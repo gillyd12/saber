@@ -30,7 +30,6 @@ module.exports = {
       League.findOrCreate({name: league}, {name: league})
         .then(function (data) {
           "use strict";
-          sails.log.info("loaded: " + data.name);
         })
         .catch(function (error) {
           sails.log.error(error.details);

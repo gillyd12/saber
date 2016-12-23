@@ -40,8 +40,21 @@ module.exports = {
     },
 
     // Add a reference to players
+    records: {
+      collection: 'record',
+      via: 'team'
+    },
+
+    // Add a reference to players
+    statistics: {
+      collection: 'statistic',
+      via: 'team'
+    },
+
+
+    // Add a reference to players
     players: {
-      // collection: 'player',
+      collection: 'player',
       via: 'team'
     }
 
@@ -309,7 +322,6 @@ module.exports = {
       })
         .then(function (data) {
           "use strict";
-          sails.log.info("loaded: " + data.short_name);
         })
         .catch(function (error) {
           sails.log.error(error.details);

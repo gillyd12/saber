@@ -551,8 +551,6 @@ module.exports = {
             obj.pw = line["PW"];
             obj.rar = line["RAR"];
 
-            console.log('loading player: ' + obj.name);
-
             players.push(obj);
 
           }

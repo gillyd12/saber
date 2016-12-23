@@ -156,50 +156,50 @@ var calculateStatistics = function (callback, games, count, year) {
 
 var records = function (callback, games, count, year) {
   "use strict";
-  return new Promise(function (resolve, reject) {
+  // return new Promise(function (resolve, reject) {
 
     /* calculation variables */
 
-    Team.getTeams()
-      .then(function (teams) {
-        async.each(teams, function (team, callback) {
-
-          var record = {
-            team: '',
-            loses: 0,
-            wins: 0,
-            pct: 0
-          }
-          async.waterfall([
-            (callback) => {
-              "use strict";
-              teamService.getTeamRecord(team, year, count)
-                .then(function (result) {
-                  callback(null, result);
-                })
-            }
-          ], function (err, result) {
-
-            record.team = result.team;
-            record.wins = result.record.wins;
-            record.loses = result.record.loses;
-
-            var tempPct = (record.wins / (record.wins + record.loses));
-            if (tempPct === 1) {
-              tempPct = 0.999
-            }
-
-            record.pct = tempPct.toString();
-
-            team.record = record;
-            callback();
-          });
-
-        }, function (err) {
-          resolve(teams);
-        })
-      })
-  })
+    return Team.getTeams().populate('records');
+      // .then(function (teams) {
+      //   async.each(teams, function (team, callback) {
+      //
+      //     var record = {
+      //       team: '',
+      //       loses: 0,
+      //       wins: 0,
+      //       pct: 0
+      //     }
+      //     async.waterfall([
+      //       (callback) => {
+      //         "use strict";
+      //         teamService.getTeamRecord(team, year, count)
+      //           .then(function (result) {
+      //             callback(null, result);
+      //           })
+      //       }
+      //     ], function (err, result) {
+      //
+      //       record.team = result.team;
+      //       record.wins = result.record.wins;
+      //       record.loses = result.record.loses;
+      //
+      //       var tempPct = (record.wins / (record.wins + record.loses));
+      //       if (tempPct === 1) {
+      //         tempPct = 0.999
+      //       }
+      //
+      //       record.pct = tempPct.toString();
+      //
+      //       team.record = record;
+      //       callback();
+      //     });
+      //
+      //   }, function (err) {
+      //     resolve(teams);
+      //   })
+      // })
+  // })
 
 }
 
@@ -258,16 +258,16 @@ module.exports = {
 
   },
 
-  getTeamRecord: function (req, res) {
-    "use strict";
-
-    var params = init(req);
-
-    teamService.getTeamRecord(params.team, params.year, params.count)
-      .then(function (result) {
-        return res.send(result);
-      })
-  }
+  // getTeamRecord: function (req, res) {
+  //   "use strict";
+  //
+  //   var params = init(req);
+  //
+  //   teamService.getTeamRecord(params.team, params.year, params.count)
+  //     .then(function (result) {
+  //       return res.send(result);
+  //     })
+  // }
 }
 
 
