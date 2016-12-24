@@ -34,11 +34,11 @@ module.exports = {
     },
 
     games_behind: {
-      type: 'integer'
+      type: 'float'
     },
 
     winning_pct: {
-      type: 'integer'
+      type: 'float'
     }
   },
 
@@ -159,6 +159,8 @@ module.exports = {
   populate: function (callback, data, prefix_load) {
     "use strict";
 
+    var self = this;
+
     var team_1 = data.model[0];
     var team_2 = data.model[1];
 
@@ -167,18 +169,19 @@ module.exports = {
     async.series([
       function (callback) {
 
-        if (prefix_load.has(team_1.winning_team + 'w')) {
-          prefix_load.set(team_1.winning_team + 'w', prefix_load.get(team_1.winning_team + 'w') + 1)
-        } else {
-          prefix_load.set(team_1.winning_team + 'w', 1)
-        }
+        self.loadPrefix(prefix_load, team_1.winning_team + 'w');
+        var wins = prefix_load.get(team_1.winning_team + 'w');
+        var loses = prefix_load.get(team_1.winning_team + 'l');
+        var pct = self.calculateWinningPct(wins, loses);
 
         var obj = {
           file_id: team_1.file_id,
           team: team_1.winning_team,
-          wins: prefix_load.get(team_1.winning_team + 'w'),
-          losses: prefix_load.get(team_1.winning_team + 'l')
+          wins: wins,
+          losses: loses,
+          winning_pct: pct
         }
+
         Record.create(obj)
           .then(function (data) {
             "use strict";
@@ -190,18 +193,19 @@ module.exports = {
       },
       function (callback) {
 
-        if (prefix_load.has(team_2.losing_team + 'l')) {
-          prefix_load.set(team_2.losing_team + 'l', prefix_load.get(team_2.losing_team + 'l') + 1)
-        } else {
-          prefix_load.set(team_2.losing_team + 'l', 1)
-        }
+        self.loadPrefix(prefix_load, team_2.losing_team + 'l');
+        var wins = prefix_load.get(team_2.losing_team + 'w');
+        var loses = prefix_load.get(team_2.losing_team + 'l');
+        var pct = self.calculateWinningPct(wins, loses);
 
         var obj = {
           file_id: team_2.file_id,
           team: team_2.losing_team,
-          wins: prefix_load.get(team_2.losing_team + 'w'),
-          losses: prefix_load.get(team_2.losing_team + 'l')
+          wins: wins,
+          losses: loses,
+          winning_pct: pct
         }
+
         Record.create(obj)
           .then(function (data) {
             "use strict";
@@ -215,7 +219,28 @@ module.exports = {
         return callback();
       }
     ])
+  },
+
+  loadPrefix: function(prefix_load, team) {
+    "use strict";
+    if (prefix_load.has(team)) {
+      prefix_load.set(team, prefix_load.get(team) + 1)
+    } else {
+      prefix_load.set(team, 1)
+    }
+  },
+
+  calculateWinningPct: function(wins, loses) {
+    "use strict";
+    var pct = .999;
+
+    if (wins && loses) {
+      pct = (wins / (wins + loses))
+    }
+
+    return pct;
   }
+
 
 };
 
