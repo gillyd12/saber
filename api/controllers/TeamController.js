@@ -153,9 +153,12 @@ var calculateStatistics = function (callback, games, count, year) {
   // })
 }
 
-var records = function (callback, games, count, year) {
+var records = function (count, year) {
   "use strict";
-  return Team.getTeams().populate('records');
+  return Team.getTeams().populate('records', {
+    limit: count,
+    sort: 'updatedAt DESC'
+  })
 }
 
 module.exports = {
@@ -190,26 +193,33 @@ module.exports = {
     "use strict";
 
     var params = init(req);
-    var query = configureQuery(params.year);
+    // var query = configureQuery(params.year);
 
-    async.waterfall([
-      (callback) => {
+    records(params.count, params.year)
+      .then(function (results) {
         "use strict";
-        teamService.sortDate(query, 'desc')
-          .then(function (games) {
-            callback(null, games);
-          })
-      },
-      (games, callback) => {
-        records(callback, games, params.count, params.year)
-          .then(function (results) {
-            "use strict";
-            callback(null, results);
-          })
-      },
-    ], function (err, result) {
-      return res.send(result);
-    });
+        res.send(results);
+      })
+
+
+    // async.waterfall([
+    //   (callback) => {
+    //     "use strict";
+    //     teamService.sortDate(query, 'desc')
+    //       .then(function (games) {
+    //         callback(null, games);
+    //       })
+    //   },
+    //   (games, callback) => {
+    //     records(callback, games, params.count, params.year)
+    //       .then(function (results) {
+    //         "use strict";
+    //         callback(null, results);
+    //       })
+    //   },
+    // ], function (err, result) {
+    //   return res.send(result);
+    // });
 
   },
 
