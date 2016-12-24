@@ -172,7 +172,7 @@ module.exports = {
         self.loadPrefix(prefix_load, team_1.winning_team + 'w');
         var wins = prefix_load.get(team_1.winning_team + 'w');
         var loses = prefix_load.get(team_1.winning_team + 'l');
-        var pct = self.calculateWinningPct(wins, loses);
+        var pct = RecordService.calculateWinningPct(wins, loses);
 
         var obj = {
           file_id: team_1.file_id,
@@ -196,7 +196,7 @@ module.exports = {
         self.loadPrefix(prefix_load, team_2.losing_team + 'l');
         var wins = prefix_load.get(team_2.losing_team + 'w');
         var loses = prefix_load.get(team_2.losing_team + 'l');
-        var pct = self.calculateWinningPct(wins, loses);
+        var pct = RecordService.calculateWinningPct(wins, loses);
 
         var obj = {
           file_id: team_2.file_id,
@@ -228,17 +228,6 @@ module.exports = {
     } else {
       prefix_load.set(team, 1)
     }
-  },
-
-  calculateWinningPct: function(wins, loses) {
-    "use strict";
-    var pct = .999;
-
-    if (wins && loses) {
-      pct = (wins / (wins + loses))
-    }
-
-    return pct;
   }
 
 
