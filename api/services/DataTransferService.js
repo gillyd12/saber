@@ -43,6 +43,7 @@ module.exports = {
     try {
 
       var records = model.load(parser);
+      var prefix_load = new Map();
 
       // sails.log.info("loading " + model.adapter.identity + " ...");
 
@@ -52,7 +53,7 @@ module.exports = {
           var res = {};
           model.map(a, res, value).then(function (data) {
             "use strict";
-            model.populate(callback, data);
+            model.populate(callback, data, prefix_load);
           })
         })
       } else {
