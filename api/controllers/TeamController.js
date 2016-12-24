@@ -55,6 +55,7 @@ var calculateStatistics = function (callback, games, count, year) {
   // return new Promise(function (resolve, reject) {
 
   /* calculation variables */
+  // todo - implement statistics
 
   return Team.getTeams().populate('statistics');
   // async.each(teams, function (team, callback) {
