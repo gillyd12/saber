@@ -59,6 +59,8 @@ module.exports = {
   getScores: function (files) {
     "use strict";
 
+    scores = [];
+
     try {
 
       for (var file of files) {
@@ -550,8 +552,6 @@ module.exports = {
             obj.pr = line["PR"];
             obj.pw = line["PW"];
             obj.rar = line["RAR"];
-
-            console.log('loading player: ' + obj.name);
 
             players.push(obj);
 

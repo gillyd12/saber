@@ -54,9 +54,11 @@ module.exports.routes = {
   // /team/chc/record?count=30 - will get you the number of games the cubs won and lost in their last 30
   // /team/chc/record - will get you the current record for the cubs in the current year
   // /team/chc/record?year=2065 - will get you the record for the cubs in the year 2065
-  'get /team/:abrv/record': {controller: 'TeamController', action: 'getTeamRecord', skipAssets: true},
   // 'get /team/:abrv/record/streak': {controller: 'TeamController', action: 'getStreak', skipAssets: true},
   // 'get /team/:abrv/stats': {controller: 'TeamController', action: 'getStats', skipAssets: true},
+
+  /* gets record for a given team */
+  // 'get /team/:abrv/record': {controller: 'TeamController', action: 'getTeamRecord', skipAssets: true},
 
   /* returns all the teams and the associated team stats */
   'get /team/stats': {controller: 'TeamController', action: 'getStats', skipAssets: true},
@@ -67,6 +69,6 @@ module.exports.routes = {
   // /league/al/ - you will get every team in the AL
   // 'get /league/:league': {controller: 'LeagueController', action: 'getLeague', skipAssets: true},
   // /league/al/division/east - you will get every team in the AL east
-  'get /league/:league/division/:division': {controller: 'LeagueController', action: 'getDivision', skipAssets: true},
+  // 'get /league/:league/division/:division': {controller: 'LeagueController', action: 'getDivision', skipAssets: true},
 
 };

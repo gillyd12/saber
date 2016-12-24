@@ -1,60 +1,64 @@
 /**
-* Game.js
-*
-* @description :: TODO: You might write a short summary of how this model works and what it represents here.
-* @docs        :: http://sailsjs.org/#!documentation/models
-*/
+ * Created by bryangill on 12/23/16.
+ */
 
+var rest = require('restling');
+var utilityService = require('./UtilityService');
+var parser = require("./ParserService");
+var _ = require('lodash');
 var S = require('string');
 
 module.exports = {
 
-  attributes: {
+  win: function (file_id, team_short_name) {
+    /* this method determines whether a team has won for a given game */
+    "use strict";
+    var result = false;
 
-    game_id: {
-      type: 'string',
-      unique: true,
-      primaryKey: true
-    },
-
-    date: {
-      type: 'datetime'
-    },
-
-    home_team: {
-      type: 'string'
-    },
-
-    home_score: {
-      type: 'string'
-    },
-
-    visiting_team: {
-      type: 'string'
-    },
-
-    visiting_score: {
-      type: 'string'
-    },
-
-    winning_team: {
-      type: 'string'
-    },
-
-    losing_team: {
-      type: 'string'
-    },
-
-    // Add a reference to players
-    participants: {
-      collection: 'Participant',
-      via: 'game'
-    }
-
-
+    return new Promise(function (resolve, reject) {
+      try {
+        Team.getFullname(team_short_name)
+          .then(function (team_full_name) {
+            Game.find({file_id: file_id, winning_team: team_full_name})
+              .then(function (game) {
+                if (game) {
+                  result = true;
+                }
+                resolve(result);
+              })
+          })
+      } catch (error) {
+        sails.log.error(error);
+        reject(error);
+      }
+    })
   },
 
-  map: function (a, res, model) {
+  loss: function (file_id, team_short_name) {
+    /* this method determines whether a team has lost for a given game */
+    "use strict";
+    var result = false;
+
+    return new Promise(function (resolve, reject) {
+      try {
+        Team.getFullname(team_short_name)
+          .then(function (team_full_name) {
+            Game.find({file_id: file_id, losing_team: team_full_name})
+              .then(function (game) {
+                if (game) {
+                  result = true;
+                }
+                resolve(result);
+              })
+          })
+      } catch (error) {
+        sails.log.error(error);
+        reject(error);
+      }
+    })
+  },
+
+  model_object: function (model) {
     "use strict";
     var self = this;
 
@@ -163,25 +167,4 @@ module.exports = {
 
   },
 
-  /* todo move this to a service at some point */
-  load: function (parser) {
-    'use strict'
-
-    // startup
-    return parser.getScores(parser.getDirectoryContentNames("input/recaps"));
-  },
-
-  populate: function (callback, data) {
-    "use strict";
-    Game.findOrCreate({ game_id: data.model.game_id }, data.model)
-      .then(function (data) {
-        "use strict";
-        callback();
-      })
-      .catch(function (error) {
-        sails.log.error(error.details);
-      });
-
-  }
 };
-

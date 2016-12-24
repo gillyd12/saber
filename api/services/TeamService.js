@@ -148,6 +148,18 @@ module.exports = {
       })
 
     })
+  },
+
+  getFullName: function(shortname) {
+    "use strict";
+    return Team.find({short_name: shortname});
+  },
+
+  getShortName: function(fullname) {
+    "use strict";
+    return Team.find({full_name: fullname});
   }
+
+
 
 };

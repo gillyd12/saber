@@ -59,12 +59,9 @@ module.exports = {
   populate: function (callback, data) {
     "use strict";
 
-    sails.log.info("loading: " + data.model.name);
-
     Participant.create(data.model)
       .then(function (data) {
         "use strict";
-        // sails.log.info("found: " + data.name);
         callback();
       })
       .catch(function (error) {
