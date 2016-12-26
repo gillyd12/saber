@@ -244,28 +244,35 @@ module.exports = {
         self.loadRSRAPrefix(prefix_load, team_1.winning_team + 'ra', team_2.losing_score);
         self.loadStreakPrefix(prefix_load, team_1.winning_team + 'winningstreak');
         var wins = prefix_load.get(team_1.winning_team + 'w');
-        var loses = prefix_load.get(team_1.winning_team + 'l');
+        var losses = prefix_load.get(team_1.winning_team + 'l');
         var games_played = wins;
-        if (loses) {
+        if (losses) {
           if (games_played) {
-            games_played = games_played + loses;
+            games_played = games_played + losses;
           } else {
-            games_played = loses;
+            games_played = losses;
           }
         }
+        self.loadLast20Prefix(prefix_load, team_1.winning_team + 'last20wins', wins, games_played);
         var runs_scored_per_game = prefix_load.get(team_1.winning_team + 'rs') / games_played;
         var runs_against_per_game = prefix_load.get(team_1.winning_team + 'ra') / games_played;
         var streak = prefix_load.get(team_1.winning_team + 'winningstreak');
+        var pythagorian_w_pct = (runs_scored_per_game * 1.81) / ((runs_scored_per_game * 1.81) + (runs_against_per_game * 1.81));
+        var last_20_wins = prefix_load.get(team_1.winning_team + 'last20wins');
+        var last_20_losses = prefix_load.get(team_1.winning_team + 'last20losses');
 
         var obj = {
           file_id: team_1.file_id,
           team: team_1.winning_team,
           wins: wins,
-          losses: loses,
+          losses: losses,
           games_played: games_played,
           runs_scored_per_game: runs_scored_per_game,
           runs_against_per_game: runs_against_per_game,
-          streak: streak
+          streak: streak,
+          pythagorian_w_pct: pythagorian_w_pct,
+          last_20_wins: last_20_wins,
+          last_20_losses: last_20_losses
         }
 
         Statistic.create(obj)
@@ -284,29 +291,36 @@ module.exports = {
         self.loadRSRAPrefix(prefix_load, team_2.losing_team + 'ra', team_1.winning_score);
         self.loadStreakPrefix(prefix_load, team_2.losing_team + 'losingstreak');
         var wins = prefix_load.get(team_2.losing_team + 'w');
-        var loses = prefix_load.get(team_2.losing_team + 'l');
+        var losses = prefix_load.get(team_2.losing_team + 'l');
         var games_played = wins;
-        if (loses) {
+        if (losses) {
           if (games_played) {
-            games_played = games_played + loses;
+            games_played = games_played + losses;
           } else {
-            games_played = loses;
+            games_played = losses;
           }
         }
 
+        self.loadLast20Prefix(prefix_load, team_2.losing_team + 'last20losses', losses, games_played);
         var runs_scored_per_game = prefix_load.get(team_2.losing_team + 'rs') / games_played;
         var runs_against_per_game = prefix_load.get(team_2.losing_team + 'ra') / games_played;
         var streak = prefix_load.get(team_2.losing_team + 'losingstreak');
+        var pythagorian_w_pct = (runs_scored_per_game * 1.81) / ((runs_scored_per_game * 1.81) + (runs_against_per_game * 1.81));
+        var last_20_losses = prefix_load.get(team_2.losing_team + 'last20losses');
+        var last_20_wins = prefix_load.get(team_2.losing_team + 'last20wins');
 
         var obj = {
           file_id: team_2.file_id,
           team: team_2.losing_team,
           wins: wins,
-          losses: loses,
+          losses: losses,
           games_played: games_played,
           runs_scored_per_game: runs_scored_per_game,
           runs_against_per_game: runs_against_per_game,
-          streak: streak
+          streak: streak,
+          pythagorian_w_pct: pythagorian_w_pct,
+          last_20_wins: last_20_wins,
+          last_20_losses: last_20_losses
         }
 
         Statistic.create(obj)
@@ -366,8 +380,50 @@ module.exports = {
         prefix_load.set(team, '-1');
       }
     }
+  },
 
+  loadLast20Prefix: function(prefix_load, team, count, games_played) {
+    "use strict";
+
+    if (games_played <= 20) {
+      if (prefix_load.has(team)) {
+        var v = prefix_load.get(team);
+        if (v) {
+          prefix_load.set(team, v + 1);
+        } else {
+          prefix_load.set(team, 1);
+        }
+      } else {
+        prefix_load.set(team, 1);
+      }
+    } else {
+      if (S(team).contains('last20wins')) {
+
+        prefix_load.set(team, prefix_load.get(team) + 1);
+
+        var old = S(team).chompRight('last20wins').s;
+        var losses = prefix_load.get(old + 'last20losses');
+        if (losses) {
+          prefix_load.set(old + 'last20losses', losses - 1);
+        } else {
+          prefix_load.set(old + 'last20losses', 0);
+        }
+      } else if (S(team).contains('last20losses')) {
+
+        prefix_load.set(team, prefix_load.get(team) + 1);
+
+        var old = S(team).chompRight('last20losses').s;
+
+        var wins = prefix_load.get(old + 'last20wins');
+        if (wins) {
+          prefix_load.set(old + 'last20wins', wins - 1);
+        } else {
+          prefix_load.set(old + 'last20wins', 0);
+        }
+      }
+    }
   }
+
 
 };
 
