@@ -276,12 +276,12 @@ module.exports = {
           last_20_wins: last_20_wins,
           last_20_losses: last_20_losses,
           strength_of_division: strength_of_division,
-          rating: 0
+          power_rank_rating: 0
         }
 
         self.loadRatingPrefix(prefix_load, team_1.winning_team + 'winningRating', obj);
 
-        obj.rating = prefix_load.get(team_1.winning_team + 'winningRating');
+        obj.power_rank_rating = prefix_load.get(team_1.winning_team + 'winningRating');
 
         Statistic.create(obj)
           .then(function (data) {
@@ -334,13 +334,12 @@ module.exports = {
           last_20_wins: last_20_wins,
           last_20_losses: last_20_losses,
           strength_of_division: strength_of_division,
-          rating: 0
+          power_rank_rating: 0
         }
 
         self.loadRatingPrefix(prefix_load, team_2.losing_team + 'losingRating', obj);
 
-        obj.rating = prefix_load.get(team_2.losing_team + 'losingRating');
-
+        obj.power_rank_rating = prefix_load.get(team_2.losing_team + 'losingRating');
 
         Statistic.create(obj)
           .then(function (data) {
@@ -447,7 +446,6 @@ module.exports = {
     "use strict";
 
     var zteam = S(team).left(3).s;
-    var lookup = S(team).chompLeft(zteam).s;
     var teams = Team.getDivisionTeams(zteam);
 
     var totalPyth = 0;
@@ -471,7 +469,6 @@ module.exports = {
       if ((ra + rs) > 0) {
         totalPyth = totalPyth + ((rs * 1.81) / ((rs * 1.81) + (ra * 1.81)));
       }
-
 
       callback();
     }, function (err) {
