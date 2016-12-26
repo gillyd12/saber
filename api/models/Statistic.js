@@ -261,7 +261,6 @@ module.exports = {
         var last_20_wins = prefix_load.get(team_1.winning_team + 'last20wins');
         var last_20_losses = prefix_load.get(team_1.winning_team + 'last20losses');
         self.loadSODPrefix(prefix_load, team_1.winning_team + 'winningSOD');
-
         var strength_of_division = prefix_load.get(team_1.winning_team + 'winningSOD');
 
         var obj = {
@@ -276,8 +275,13 @@ module.exports = {
           pythagorian_w_pct: pythagorian_w_pct,
           last_20_wins: last_20_wins,
           last_20_losses: last_20_losses,
-          strength_of_division: strength_of_division
+          strength_of_division: strength_of_division,
+          rating: 0
         }
+
+        self.loadRatingPrefix(prefix_load, team_1.winning_team + 'winningRating', obj);
+
+        obj.rating = prefix_load.get(team_1.winning_team + 'winningRating');
 
         Statistic.create(obj)
           .then(function (data) {
@@ -329,8 +333,14 @@ module.exports = {
           pythagorian_w_pct: pythagorian_w_pct,
           last_20_wins: last_20_wins,
           last_20_losses: last_20_losses,
-          strength_of_division: strength_of_division
+          strength_of_division: strength_of_division,
+          rating: 0
         }
+
+        self.loadRatingPrefix(prefix_load, team_2.losing_team + 'losingRating', obj);
+
+        obj.rating = prefix_load.get(team_2.losing_team + 'losingRating');
+
 
         Statistic.create(obj)
           .then(function (data) {
@@ -468,6 +478,42 @@ module.exports = {
       var calculation = (totalPyth / teams.length);
       prefix_load.set(team, Math.round(calculation * 100) / 100);
     })
+  },
+
+  loadRatingPrefix: function(prefix_load, team, obj) {
+    "use strict";
+
+    var losses = 0;
+    if (obj.losses) {
+      losses = obj.losses;
+    }
+    var l20l = 0;
+    if (obj.last_20_losses) {
+      l20l = obj.last_20_losses;
+    }
+
+    var wins = 0;
+    if (obj.wins) {
+      wins = obj.wins;
+    }
+    var l20w = 0;
+    if (obj.last_20_wins) {
+      l20w = obj.last_20_wins;
+    }
+
+
+    var streak = S(obj.streak).toInt();
+    var sodCalc = ((obj.strength_of_division - .5) * 100) / obj.games_played;
+    var pythCalc = obj.pythagorian_w_pct - .5
+
+    var rating = Math.round(((wins + l20w + (obj.runs_scored_per_game / 2))
+              - (losses + l20l + (obj.runs_against_per_game / 2))
+              + (streak)
+              + (sodCalc)
+              + (pythCalc)) * 100) / 100;
+
+    prefix_load.set(team, rating)
+
   }
 
 
