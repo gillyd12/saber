@@ -254,12 +254,15 @@ module.exports = {
           }
         }
         self.loadLast20Prefix(prefix_load, team_1.winning_team + 'last20wins', wins, games_played);
-        var runs_scored_per_game = prefix_load.get(team_1.winning_team + 'rs') / games_played;
-        var runs_against_per_game = prefix_load.get(team_1.winning_team + 'ra') / games_played;
+        var runs_scored_per_game = Math.round((prefix_load.get(team_1.winning_team + 'rs') / games_played) * 100) / 100;
+        var runs_against_per_game = Math.round((prefix_load.get(team_1.winning_team + 'ra') / games_played) * 100) / 100;
         var streak = prefix_load.get(team_1.winning_team + 'winningstreak');
-        var pythagorian_w_pct = (runs_scored_per_game * 1.81) / ((runs_scored_per_game * 1.81) + (runs_against_per_game * 1.81));
+        var pythagorian_w_pct = Math.round((runs_scored_per_game * 1.81) / ((runs_scored_per_game * 1.81) + (runs_against_per_game * 1.81)) * 100) / 100;
         var last_20_wins = prefix_load.get(team_1.winning_team + 'last20wins');
         var last_20_losses = prefix_load.get(team_1.winning_team + 'last20losses');
+        self.loadSODPrefix(prefix_load, team_1.winning_team + 'winningSOD');
+
+        var strength_of_division = prefix_load.get(team_1.winning_team + 'winningSOD');
 
         var obj = {
           file_id: team_1.file_id,
@@ -272,7 +275,8 @@ module.exports = {
           streak: streak,
           pythagorian_w_pct: pythagorian_w_pct,
           last_20_wins: last_20_wins,
-          last_20_losses: last_20_losses
+          last_20_losses: last_20_losses,
+          strength_of_division: strength_of_division
         }
 
         Statistic.create(obj)
@@ -302,12 +306,16 @@ module.exports = {
         }
 
         self.loadLast20Prefix(prefix_load, team_2.losing_team + 'last20losses', losses, games_played);
-        var runs_scored_per_game = prefix_load.get(team_2.losing_team + 'rs') / games_played;
-        var runs_against_per_game = prefix_load.get(team_2.losing_team + 'ra') / games_played;
+        var runs_scored_per_game = Math.round((prefix_load.get(team_2.losing_team + 'rs') / games_played) * 100) / 100;
+        var runs_against_per_game = Math.round((prefix_load.get(team_2.losing_team + 'ra') / games_played) * 100) / 100;
         var streak = prefix_load.get(team_2.losing_team + 'losingstreak');
-        var pythagorian_w_pct = (runs_scored_per_game * 1.81) / ((runs_scored_per_game * 1.81) + (runs_against_per_game * 1.81));
+        var pythagorian_w_pct = Math.round((runs_scored_per_game * 1.81) / ((runs_scored_per_game * 1.81) + (runs_against_per_game * 1.81)) * 100) / 100;
         var last_20_losses = prefix_load.get(team_2.losing_team + 'last20losses');
         var last_20_wins = prefix_load.get(team_2.losing_team + 'last20wins');
+
+        self.loadSODPrefix(prefix_load, team_2.losing_team + 'losingSOD');
+
+        var strength_of_division = prefix_load.get(team_2.losing_team + 'losingSOD');
 
         var obj = {
           file_id: team_2.file_id,
@@ -320,7 +328,8 @@ module.exports = {
           streak: streak,
           pythagorian_w_pct: pythagorian_w_pct,
           last_20_wins: last_20_wins,
-          last_20_losses: last_20_losses
+          last_20_losses: last_20_losses,
+          strength_of_division: strength_of_division
         }
 
         Statistic.create(obj)
@@ -338,7 +347,7 @@ module.exports = {
     ])
   },
 
-  loadWLPrefix: function(prefix_load, team) {
+  loadWLPrefix: function (prefix_load, team) {
     "use strict";
     if (prefix_load.has(team)) {
       prefix_load.set(team, prefix_load.get(team) + 1)
@@ -347,7 +356,7 @@ module.exports = {
     }
   },
 
-  loadRSRAPrefix: function(prefix_load, team, runs) {
+  loadRSRAPrefix: function (prefix_load, team, runs) {
     "use strict";
     if (prefix_load.has(team)) {
       prefix_load.set(team, prefix_load.get(team) + runs)
@@ -357,7 +366,7 @@ module.exports = {
 
   },
 
-  loadStreakPrefix: function(prefix_load, team) {
+  loadStreakPrefix: function (prefix_load, team) {
     "use strict";
     if (S(team).contains('winningstreak')) {
       if (prefix_load.has(team)) {
@@ -382,7 +391,7 @@ module.exports = {
     }
   },
 
-  loadLast20Prefix: function(prefix_load, team, count, games_played) {
+  loadLast20Prefix: function (prefix_load, team, count, games_played) {
     "use strict";
 
     if (games_played <= 20) {
@@ -422,6 +431,43 @@ module.exports = {
         }
       }
     }
+  },
+
+  loadSODPrefix: function (prefix_load, team) {
+    "use strict";
+
+    var zteam = S(team).left(3).s;
+    var lookup = S(team).chompLeft(zteam).s;
+    var teams = Team.getDivisionTeams(zteam);
+
+    var totalPyth = 0;
+    async.each(teams, function (team, callback) {
+
+      var rs = 0;
+      var ra = 0;
+
+      if (prefix_load.has(team.short_name + 'rs')) {
+        rs = prefix_load.get(team.short_name + 'rs');
+      } else {
+        rs = 0;
+      }
+
+      if (prefix_load.has(team.short_name + 'ra')) {
+        ra = prefix_load.get(team.short_name  + 'ra');
+      } else {
+        ra = 0;
+      }
+
+      if ((ra + rs) > 0) {
+        totalPyth = totalPyth + ((rs * 1.81) / ((rs * 1.81) + (ra * 1.81)));
+      }
+
+
+      callback();
+    }, function (err) {
+      var calculation = (totalPyth / teams.length);
+      prefix_load.set(team, Math.round(calculation * 100) / 100);
+    })
   }
 
 
