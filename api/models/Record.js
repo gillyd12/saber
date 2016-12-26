@@ -105,7 +105,7 @@ module.exports = {
 
     // todo prefix_load - preload this up with existing numbers
 
-    async.series([
+    async.parallel([
       function (callback) {
 
         self.loadPrefix(prefix_load, team_1.winning_team + 'w');

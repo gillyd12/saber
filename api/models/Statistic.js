@@ -8,7 +8,7 @@
  * @docs        :: http://sailsjs.org/#!documentation/models
  */
 
-// var S = require('string');
+var S = require('string');
 // var _ = require('underscore');
 
 module.exports = {
@@ -44,7 +44,7 @@ module.exports = {
     },
 
     streak: {
-      type: 'integer'
+      type: 'string'
     },
 
     runs_scored_per_game: {
@@ -63,8 +63,12 @@ module.exports = {
       type: 'float'
     },
 
-    rating: {
+    power_rank_rating: {
       type: 'float'
+    },
+
+    power_rank_number: {
+      type: 'integer'
     }
 
   },
@@ -232,15 +236,15 @@ module.exports = {
 
     // todo prefix_load - preload this up with existing numbers
 
-    async.series([
+    async.parallel([
       function (callback) {
 
         self.loadWLPrefix(prefix_load, team_1.winning_team + 'w');
         self.loadRSRAPrefix(prefix_load, team_1.winning_team + 'rs', team_1.winning_score);
         self.loadRSRAPrefix(prefix_load, team_1.winning_team + 'ra', team_2.losing_score);
+        self.loadStreakPrefix(prefix_load, team_1.winning_team + 'winningstreak');
         var wins = prefix_load.get(team_1.winning_team + 'w');
         var loses = prefix_load.get(team_1.winning_team + 'l');
-        // var pct = RecordService.calculateWinningPct(wins, loses);
         var games_played = wins;
         if (loses) {
           if (games_played) {
@@ -251,6 +255,7 @@ module.exports = {
         }
         var runs_scored_per_game = prefix_load.get(team_1.winning_team + 'rs') / games_played;
         var runs_against_per_game = prefix_load.get(team_1.winning_team + 'ra') / games_played;
+        var streak = prefix_load.get(team_1.winning_team + 'winningstreak');
 
         var obj = {
           file_id: team_1.file_id,
@@ -259,7 +264,8 @@ module.exports = {
           losses: loses,
           games_played: games_played,
           runs_scored_per_game: runs_scored_per_game,
-          runs_against_per_game: runs_against_per_game
+          runs_against_per_game: runs_against_per_game,
+          streak: streak
         }
 
         Statistic.create(obj)
@@ -276,6 +282,7 @@ module.exports = {
         self.loadWLPrefix(prefix_load, team_2.losing_team + 'l');
         self.loadRSRAPrefix(prefix_load, team_2.losing_team + 'rs', team_2.losing_score);
         self.loadRSRAPrefix(prefix_load, team_2.losing_team + 'ra', team_1.winning_score);
+        self.loadStreakPrefix(prefix_load, team_2.losing_team + 'losingstreak');
         var wins = prefix_load.get(team_2.losing_team + 'w');
         var loses = prefix_load.get(team_2.losing_team + 'l');
         var games_played = wins;
@@ -289,6 +296,7 @@ module.exports = {
 
         var runs_scored_per_game = prefix_load.get(team_2.losing_team + 'rs') / games_played;
         var runs_against_per_game = prefix_load.get(team_2.losing_team + 'ra') / games_played;
+        var streak = prefix_load.get(team_2.losing_team + 'losingstreak');
 
         var obj = {
           file_id: team_2.file_id,
@@ -297,7 +305,8 @@ module.exports = {
           losses: loses,
           games_played: games_played,
           runs_scored_per_game: runs_scored_per_game,
-          runs_against_per_game: runs_against_per_game
+          runs_against_per_game: runs_against_per_game,
+          streak: streak
         }
 
         Statistic.create(obj)
@@ -332,8 +341,33 @@ module.exports = {
       prefix_load.set(team, runs)
     }
 
-  }
+  },
 
+  loadStreakPrefix: function(prefix_load, team) {
+    "use strict";
+    if (S(team).contains('winningstreak')) {
+      if (prefix_load.has(team)) {
+        var pos = S(prefix_load.get(team)).toInt() + 1
+        prefix_load.set(team, S(pos).toString());
+        var old = S(team).chompRight('winningstreak').s;
+        prefix_load.set(old + 'losingstreak', '0');
+      } else {
+        prefix_load.set(team, '1')
+      }
+    } else if (S(team).contains('losingstreak')) {
+      if (prefix_load.has(team)) {
+        var neg = S(prefix_load.get(team)).chompLeft('-').s;
+        var pos = S(neg).toInt() + 1;
+        var backToNeg = '-' + S(pos).toString();
+        prefix_load.set(team, backToNeg);
+        var old = S(team).chompRight('losingstreak').s;
+        prefix_load.set(old + 'winningstreak', '0');
+      } else {
+        prefix_load.set(team, '-1');
+      }
+    }
+
+  }
 
 };
 
