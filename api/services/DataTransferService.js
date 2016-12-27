@@ -43,6 +43,8 @@ module.exports = {
     try {
 
       var records = model.load(parser);
+
+      // todo need to null this out at some point?
       var prefix_load = new Map();
 
       // sails.log.info("loading " + model.adapter.identity + " ...");

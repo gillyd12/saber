@@ -73,6 +73,12 @@ module.exports.session = {
   // db: 'sails',
   // collection: 'sessions',
 
+    adapter: 'mongo',
+    host: process.env.saber_mongo_host, // defaults to `localhost` if omitted
+    port: process.env.saber_mongo_port, // defaults to 27017 if omitted
+    db: process.env.saber_mongo_database, // or omit if not relevant
+    collection: 'sessions',
+
   /***************************************************************************
   *                                                                          *
   * Optional Values:                                                         *
@@ -82,10 +88,10 @@ module.exports.session = {
   *                                                                          *
   ***************************************************************************/
 
-  // username: '',
-  // password: '',
-  // auto_reconnect: false,
-  // ssl: false,
-  // stringify: true
+    username: process.env.saber_mongo_username,
+    password: process.env.saber_mongo_password,
+    auto_reconnect: false,
+    ssl: false,
+    stringify: false
 
 };

@@ -16,32 +16,33 @@ module.exports.bootstrap = function (cb) {
 
   async.series([
     function (callback) {
+      sails.log.info('Loading League');
       League.init(callback, ['AL', 'NL']);
     },
     function (callback) {
-      sails.log.info('League was loaded.');
+      sails.log.info('Loading Team');
       Team.init(callback);
     },
     function (callback) {
-      sails.log.info('Team was loaded.');
+      sails.log.info('Loading Game');
       dataService.reload(callback, Game);
     },
     function (callback) {
-      sails.log.info('Game was loaded.');
+      sails.log.info('Loading Statistic');
       dataService.reload(callback, Statistic);
     },
     function (callback) {
-      sails.log.info('Statistic was loaded.');
+      sails.log.info('Loading Record');
       dataService.reload(callback, Record);
     },
-    function (callback) {
-      sails.log.info('Record was loaded.');
-      dataService.reload(callback, Player);
-    },
-    function (callback) {
-      sails.log.info('Player was loaded.');
-      dataService.reload(callback, Participant);
-    },
+    // function (callback) {
+    //   sails.log.info('Record was loaded.');
+    //   dataService.reload(callback, Player);
+    // },
+    // function (callback) {
+    //   sails.log.info('Player was loaded.');
+    //   dataService.reload(callback, Participant);
+    // },
     // function (callback) {
     //   sails.log.info('Participant was loaded.');
     //   parser.moveDirectoryContent(callback, "input", "output");

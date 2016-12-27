@@ -42,66 +42,13 @@ module.exports = {
     }
   },
 
-  // init: function (callback) {
-  //   "use strict";
-  //
-  //   // return new Promise(function (resolve, reject) {
-  //
-  //   try {
-  //     Team.getTeams()
-  //       .then(function (teams) {
-  //
-  //         for (var team of teams) {
-  //
-  //           var obj = {
-  //             team: team.short_name, // check this - needs to match short name of team
-  //             wins: 1,
-  //             losses: 2,
-  //             games_behind: 3,
-  //             winning_pct: 4
-  //           }
-  //
-  //           Record.create(obj)
-  //             .then(function (data) {
-  //               "use strict";
-  //             })
-  //             .catch(function (error) {
-  //               sails.log.error(error.details);
-  //             });
-  //         }
-  //
-  //         callback();
-  //
-  //       })
-  //   } catch (error) {
-  //     sails.log.error(error);
-  //   }
-  //
-  //
-  //
-  //   // })
-  //
-  //
-  //   // for (var team of this.teams) {
-  //   //   Team.findOrCreate({short_name: team.short_name}, {
-  //   //     short_name: team.short_name,
-  //   //     full_name: team.full_name,
-  //   //     city: team.city,
-  //   //     maskot: team.maskot,
-  //   //     division: team.division,
-  //   //     league: team.league
-  //   //   })
-  //   //     .then(function (data) {
-  //   //       "use strict";
-  //   //       callback();
-  //   //     })
-  //   //     .catch(function (error) {
-  //   //       sails.log.error(error.details);
-  //   //     });
-  //   // }
-  //
-  //
-  // }
+  /* todo move this to a service at some point */
+  load: function (parser) {
+    'use strict'
+
+    // startup
+    return parser.getScores(parser.getDirectoryContentNames("input/recaps"));
+  },
 
   map: function (a, res, model) {
     "use strict";
@@ -148,14 +95,6 @@ module.exports = {
     })
   },
 
-  /* todo move this to a service at some point */
-  load: function (parser) {
-    'use strict'
-
-    // startup
-    return parser.getScores(parser.getDirectoryContentNames("input/recaps"));
-  },
-
   populate: function (callback, data, prefix_load) {
     "use strict";
 
@@ -166,7 +105,7 @@ module.exports = {
 
     // todo prefix_load - preload this up with existing numbers
 
-    async.series([
+    async.parallel([
       function (callback) {
 
         self.loadPrefix(prefix_load, team_1.winning_team + 'w');
