@@ -9,7 +9,8 @@
  */
 
 var S = require('string');
-// var _ = require('underscore');
+var _ = require('underscore');
+var dash = require('lodash');
 
 module.exports = {
 
@@ -74,103 +75,6 @@ module.exports = {
   },
 
 
-  /* logic to complete */
-  // async.each(teams, function (team, callback) {
-  //
-  //   var pyth = 0;
-  //   var runsScored = 0;
-  //   var runsAllowed = 0;
-  //   var wins = 0;
-  //   var loses = 0;
-  //   var teamGames = 0;
-  //   var streak = 0;
-  //
-  //   /* annotate the teams */
-  //
-  //   async.each(games, function (game, callback) {
-  //     if ((wins + loses) < count) {
-  //       if (game.winning_team && (S(game.winning_team).contains(team.full_name))) {
-  //         wins = wins + 1;
-  //         teamGames = teamGames + 1;
-  //         runsScored = runsScored + game.winning_score;
-  //         streak = streak + 1;
-  //       } else if (game.losing_team && (S(game.losing_team).contains(team.full_name))) {
-  //         loses = loses + 1;
-  //         teamGames = teamGames + 1;
-  //         runsAllowed = runsAllowed + game.losing_score;
-  //         streak = streak - 1;
-  //
-  //       }
-  //       pyth = (runsScored * 1.81) / ((runsScored * 1.81) + (runsAllowed * 1.81));
-  //
-  //     }
-  //     callback();
-  //   }, function (err) {
-  //
-  //     var statistics = {
-  //       loses: 0,
-  //       wins: 0,
-  //       games_played: 0,
-  //       last20Wins: 0,
-  //       last20Losses: 0,
-  //       streak: 0,
-  //       rspg: 0,
-  //       rapg: 0,
-  //       sod: 0,
-  //       pyth: 0,
-  //       rating: 0
-  //     }
-  //
-  //     statistics.wins = wins;
-  //     statistics.loses = loses;
-  //     statistics.rspg = Math.round((runsScored / teamGames) * 100) / 100;
-  //     statistics.rapg = Math.round((runsAllowed / teamGames) * 100) / 100;
-  //     statistics.pyth = Math.round(pyth * 100) / 100;
-  //     statistics.games_played = teamGames;
-  //     statistics.streak = streak;
-  //
-  //     async.waterfall([
-  //       (callback) => {
-  //         "use strict";
-  //         teamService.getTeamRecord(team, year, 20)
-  //           .then(function (result) {
-  //             callback(null, games, team, result);
-  //           })
-  //       },
-  //       (games, team, result, callback) => {
-  //         "use strict";
-  //         teamService.sod(team, result, 162, games)
-  //           .then(function (result) {
-  //             callback(null, result);
-  //           })
-  //       },
-  //     ], function (err, result) {
-  //       statistics.last20Wins = result.record.wins;
-  //       statistics.last20Losses = result.record.loses;
-  //       statistics.sod = result.sod;
-  //
-  //       team.statistics = statistics;
-  //       team.statistics.rating = Math.round(((statistics.wins + statistics.last20Wins + (statistics.rspg / 2))
-  //           - (statistics.loses + statistics.last20Losses + (statistics.rapg / 2))
-  //           + (statistics.streak)
-  //           + (((statistics.sod - .5) * 100) / statistics.games_played)
-  //           + (statistics.pyth - .5)) * 100) / 100;
-  //
-  //       callback();
-  //     });
-  //   })
-  //
-  // }, function (err) {
-  //   var list = _.sortBy(teams, function (team) {
-  //     return team.statistics.rating;
-  //   })
-  //   list.reverse();
-  //   resolve(list);
-  // })
-  //     })
-  // })
-
-
   /* todo move this to a service at some point */
   load: function (parser) {
     'use strict'
@@ -190,10 +94,8 @@ module.exports = {
 
       Game.find({game_id: model.filename})
         .then(function (game) {
-
           async.series([
             function (callback) {
-              // var team = '';
               TeamService.getShortName(game[0].winning_team)
                 .then(function (response) {
                   team_1 = {
@@ -233,6 +135,7 @@ module.exports = {
 
     var team_1 = data.model[0];
     var team_2 = data.model[1];
+    var last20Collection;
 
     // todo prefix_load - preload this up with existing numbers
 
@@ -243,6 +146,7 @@ module.exports = {
         self.loadRSRAPrefix(prefix_load, team_1.winning_team + 'rs', team_1.winning_score);
         self.loadRSRAPrefix(prefix_load, team_1.winning_team + 'ra', team_2.losing_score);
         self.loadStreakPrefix(prefix_load, team_1.winning_team + 'winningstreak');
+
         var wins = prefix_load.get(team_1.winning_team + 'w');
         var losses = prefix_load.get(team_1.winning_team + 'l');
         var games_played = wins;
@@ -253,13 +157,32 @@ module.exports = {
             games_played = losses;
           }
         }
-        self.loadLast20Prefix(prefix_load, team_1.winning_team + 'last20wins', wins, games_played);
+
+        self.loadLast20Prefix(prefix_load, team_1.winning_team + '20', 'w');
         var runs_scored_per_game = Math.round((prefix_load.get(team_1.winning_team + 'rs') / games_played) * 100) / 100;
         var runs_against_per_game = Math.round((prefix_load.get(team_1.winning_team + 'ra') / games_played) * 100) / 100;
         var streak = prefix_load.get(team_1.winning_team + 'winningstreak');
         var pythagorian_w_pct = Math.round((runs_scored_per_game * 1.81) / ((runs_scored_per_game * 1.81) + (runs_against_per_game * 1.81)) * 100) / 100;
-        var last_20_wins = prefix_load.get(team_1.winning_team + 'last20wins');
-        var last_20_losses = prefix_load.get(team_1.winning_team + 'last20losses');
+
+        last20Collection = dash.takeRight(prefix_load.get(team_1.winning_team + '20'), 20);
+        var last_20_wins = 0;
+        var last_20_losses = 0;
+
+        if (last20Collection && last20Collection.length > 0) {
+          var results = ['w', 'l',];
+
+          var result = _.map(results, function (result) {
+            var length = _.reject(last20Collection, function (el) {
+              return (el.indexOf(result) < 0);
+            }).length;
+            return {id: result, count: length};
+          });
+
+          last_20_wins = result[0].count;
+          last_20_losses = result[1].count;
+
+        }
+
         self.loadSODPrefix(prefix_load, team_1.winning_team + 'winningSOD');
         var strength_of_division = prefix_load.get(team_1.winning_team + 'winningSOD');
 
@@ -309,13 +232,30 @@ module.exports = {
           }
         }
 
-        self.loadLast20Prefix(prefix_load, team_2.losing_team + 'last20losses', losses, games_played);
+        self.loadLast20Prefix(prefix_load, team_2.losing_team + '20', 'l');
         var runs_scored_per_game = Math.round((prefix_load.get(team_2.losing_team + 'rs') / games_played) * 100) / 100;
         var runs_against_per_game = Math.round((prefix_load.get(team_2.losing_team + 'ra') / games_played) * 100) / 100;
         var streak = prefix_load.get(team_2.losing_team + 'losingstreak');
         var pythagorian_w_pct = Math.round((runs_scored_per_game * 1.81) / ((runs_scored_per_game * 1.81) + (runs_against_per_game * 1.81)) * 100) / 100;
-        var last_20_losses = prefix_load.get(team_2.losing_team + 'last20losses');
-        var last_20_wins = prefix_load.get(team_2.losing_team + 'last20wins');
+
+        last20Collection = dash.takeRight(prefix_load.get(team_2.losing_team + '20'), 20);
+        var last_20_wins = 0;
+        var last_20_losses = 0;
+
+        if (last20Collection && last20Collection.length > 0) {
+          var results = ['w', 'l'];
+
+          var result = _.map(results, function (result) {
+            var length = _.reject(last20Collection, function (el) {
+              return (el.indexOf(result) < 0);
+            }).length;
+            return {id: result, count: length};
+          });
+
+          last_20_wins = result[0].count;
+          last_20_losses = result[1].count;
+
+        }
 
         self.loadSODPrefix(prefix_load, team_2.losing_team + 'losingSOD');
 
@@ -400,46 +340,17 @@ module.exports = {
     }
   },
 
-  loadLast20Prefix: function (prefix_load, team, count, games_played) {
+  loadLast20Prefix: function (prefix_load, team, result) {
     "use strict";
 
-    if (games_played <= 20) {
-      if (prefix_load.has(team)) {
-        var v = prefix_load.get(team);
-        if (v) {
-          prefix_load.set(team, v + 1);
-        } else {
-          prefix_load.set(team, 1);
-        }
-      } else {
-        prefix_load.set(team, 1);
-      }
+    if (prefix_load.has(team)) {
+      var existing = prefix_load.get(team);
+      existing.push(result);
+      prefix_load.set(team, existing);
     } else {
-      if (S(team).contains('last20wins')) {
-
-        prefix_load.set(team, prefix_load.get(team) + 1);
-
-        var old = S(team).chompRight('last20wins').s;
-        var losses = prefix_load.get(old + 'last20losses');
-        if (losses) {
-          prefix_load.set(old + 'last20losses', losses - 1);
-        } else {
-          prefix_load.set(old + 'last20losses', 0);
-        }
-      } else if (S(team).contains('last20losses')) {
-
-        prefix_load.set(team, prefix_load.get(team) + 1);
-
-        var old = S(team).chompRight('last20losses').s;
-
-        var wins = prefix_load.get(old + 'last20wins');
-        if (wins) {
-          prefix_load.set(old + 'last20wins', wins - 1);
-        } else {
-          prefix_load.set(old + 'last20wins', 0);
-        }
-      }
+      prefix_load.set(team, [result]);
     }
+
   },
 
   loadSODPrefix: function (prefix_load, team) {
@@ -461,7 +372,7 @@ module.exports = {
       }
 
       if (prefix_load.has(team.short_name + 'ra')) {
-        ra = prefix_load.get(team.short_name  + 'ra');
+        ra = prefix_load.get(team.short_name + 'ra');
       } else {
         ra = 0;
       }
@@ -477,7 +388,7 @@ module.exports = {
     })
   },
 
-  loadRatingPrefix: function(prefix_load, team, obj) {
+  loadRatingPrefix: function (prefix_load, team, obj) {
     "use strict";
 
     var losses = 0;
@@ -504,10 +415,10 @@ module.exports = {
     var pythCalc = obj.pythagorian_w_pct - .5
 
     var rating = Math.round(((wins + l20w + (obj.runs_scored_per_game / 2))
-              - (losses + l20l + (obj.runs_against_per_game / 2))
-              + (streak)
-              + (sodCalc)
-              + (pythCalc)) * 100) / 100;
+        - (losses + l20l + (obj.runs_against_per_game / 2))
+        + (streak)
+        + (sodCalc)
+        + (pythCalc)) * 100) / 100;
 
     prefix_load.set(team, rating)
 
