@@ -4,6 +4,7 @@
 
 var utilityService = require('./UtilityService');
 var parser = require("./ParserService");
+var S = require('string');
 
 var _ = require('lodash');
 
@@ -53,10 +54,12 @@ module.exports = {
         _(records).forEach(function (value) {
           var a;
           var res = {};
-          model.map(a, res, value).then(function (data) {
-            "use strict";
-            model.populate(callback, data, prefix_load);
-          })
+          if (!S(value.filename).contains('0716A')) {
+            model.map(a, res, value).then(function (data) {
+              "use strict";
+              model.populate(callback, data, prefix_load);
+            })
+          }
         })
       } else {
         // empty folder
